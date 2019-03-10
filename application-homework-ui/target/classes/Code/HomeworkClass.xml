@@ -31,7 +31,7 @@
   <parent>XWiki.XWikiClasses</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1550217270000</date>
+  <date>1552240345000</date>
   <contentUpdateDate>1549561541000</contentUpdateDate>
   <version>1.1</version>
   <title>HomeworkClass</title>
@@ -56,18 +56,31 @@
     <nameField/>
     <validationScript/>
     <course>
+      <cache>0</cache>
+      <classname>Course.Code.CourseClass</classname>
       <customDisplay/>
+      <defaultValue/>
       <disabled>0</disabled>
+      <displayType>input</displayType>
+      <freeText/>
       <hint/>
+      <idField/>
+      <multiSelect>0</multiSelect>
       <name>course</name>
-      <number>4</number>
+      <number>6</number>
       <picker>1</picker>
       <prettyName>course</prettyName>
-      <size>30</size>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators/>
+      <size>1</size>
+      <sort/>
+      <sql/>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      <valueField/>
+      <classType>com.xpn.xwiki.objects.classes.PageClass</classType>
     </course>
     <deadline>
       <customDisplay/>
@@ -110,7 +123,7 @@
       <displayType>input</displayType>
       <freeText/>
       <hint/>
-      <multiSelect>0</multiSelect>
+      <multiSelect>1</multiSelect>
       <name>groups</name>
       <number>5</number>
       <picker>1</picker>
@@ -126,20 +139,6 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.GroupsClass</classType>
     </groups>
-    <homeworkTitle>
-      <customDisplay/>
-      <disabled>0</disabled>
-      <hint/>
-      <name>homeworkTitle</name>
-      <number>1</number>
-      <picker>1</picker>
-      <prettyName>homeworkTitle</prettyName>
-      <size>30</size>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-    </homeworkTitle>
     <professors>
       <cache>0</cache>
       <customDisplay/>
@@ -148,7 +147,7 @@
       <displayType>input</displayType>
       <freeText/>
       <hint/>
-      <multiSelect>0</multiSelect>
+      <multiSelect>1</multiSelect>
       <name>professors</name>
       <number>6</number>
       <picker>1</picker>

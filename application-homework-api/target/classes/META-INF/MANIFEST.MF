@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1550238842049
+Bnd-LastModified: 1552250836575
 Build-Jdk: 1.8.0_171
 Built-By: xwikiuser
-Bundle-Description: Java APIs used by the Homework Application
+Bundle-Description: Java APIs used by Homework Application
 Bundle-DocURL: http://contrib.xwiki.org/
 Bundle-License: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
 Bundle-ManifestVersion: 2

@@ -31,24 +31,35 @@
   <parent>Homework.Code.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1550218776000</date>
-  <contentUpdateDate>1550218776000</contentUpdateDate>
+  <date>1552246321000</date>
+  <contentUpdateDate>1552246321000</contentUpdateDate>
   <version>1.1</version>
   <title>#if($doc.name == 'WebHomeSheet')WebHomeSheet#{else}$services.display.title($doc, {'displayerHint': 'default', 'outputSyntaxId': 'plain/1.0'})#end</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
-  <content>{{velocity}}
+  <content>{{include reference="Homework.Code.Macros"/}}
 
+{{velocity}}
 #set ($mainPageReference = $services.model.createDocumentReference('', ['Homework'], 'HomeworkClass'))
 #set($docextras = [])
+##set ($groups = $xwiki.rightsmanager.getAllGroupsNamesForMember($xcontext.user))
+#set($allHomeworks = $services.query.xwql("from doc.object(Homework.Code.HomeworkClass) as homework where doc.fullName &lt;&gt; 'Homework.Code.HomeworkTemplate' order by doc.fullName asc").execute())
+#setHomeworks($allHomeworks)
+
+#if($isStudent)
+#end
+
+#if($isProfessor)
+#end
+
 
 #set ($columnsProperties = {
   'doc.title': {"type":"text","size":10,"link":"view"},
   'description': {"type":"text","html" : "true"},
   'deadline': {"type":"text","size":10},
-  'course': {"type":"text","size":10},
+  'course': {"type":"text","size":10, "html" : "true"},
   'groups': {"type":"text","html" : "true"},
   'professors': {"type":"text","html" : "true"},
   '_actions': {'html': true, 'sortable': false, 'actions': ['edit', 'delete']}
