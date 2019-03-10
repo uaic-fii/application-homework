@@ -1,0 +1,13 @@
+// ------------------------------------------------------------------
+// NOTICE file containing copyrights,
+// in this case for Homework Application - UI
+// ------------------------------------------------------------------
+
+Homework Application - UI
+Copyright 2004-2019 XWiki Contrib
+
+This product includes/uses software developed by 'XWiki Contrib' (http://contrib.xwiki.org/)
+  - Curriculum Application - UI (http://extensions.xwiki.org?id=com.fii.curriculum:application-curriculum-ui:1.0-SNAPSHOT:::/xwiki-commons-pom/xwiki-platform/xwiki-platform-core/parent-platform/fii-parent-platform/application-curriculum/application-curriculum-ui)
+  - Homework Application - API (http://extensions.xwiki.org?id=com.fii.homework:application-homework-api:1.0-SNAPSHOT:::/xwiki-commons-pom/xwiki-platform/xwiki-platform-core/parent-platform/fii-parent-platform/application-homework/application-homework-api)
+
+
