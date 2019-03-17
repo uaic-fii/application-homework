@@ -27,18 +27,15 @@
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1550218985000</creationDate>
   <parent>XWiki.TemplateProviderClass</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1550219272000</date>
-  <contentUpdateDate>1550218985000</contentUpdateDate>
   <version>1.1</version>
   <title>HomeworkTemplateProvider</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.0</syntaxId>
-  <hidden>false</hidden>
+  <hidden>true</hidden>
   <content/>
   <object>
     <name>Homework.Code.HomeworkTemplateProvider</name>

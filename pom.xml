@@ -23,9 +23,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.fii.parent</groupId>
-    <artifactId>fii-parent-platform</artifactId>
-    <version>10.2</version>
+    <groupId>org.xwiki.contrib</groupId>
+  	<artifactId>parent-platform</artifactId>
+	  <version>11.1</version>
   </parent>
   <groupId>com.fii.homework</groupId>
   <artifactId>application-homework</artifactId>
@@ -42,4 +42,11 @@
     <module>application-homework-ui</module>
     <module>application-homework-api</module>
   </modules>
+  <developers>
+    <developer>
+      <id>oflorean</id>
+      <name>Oana-Lavinia Florean</name>
+      <email>florean.lavinia@gmail.com</email>
+    </developer>
+  </developers>
 </project>

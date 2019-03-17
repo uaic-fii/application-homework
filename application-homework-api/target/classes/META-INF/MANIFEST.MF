@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1552250836575
+Bnd-LastModified: 1552828171935
 Build-Jdk: 1.8.0_171
 Built-By: xwikiuser
 Bundle-Description: Java APIs used by Homework Application
@@ -14,13 +14,13 @@ Created-By: Apache Maven Bundle Plugin
 Implementation-Title: Homework Application - API
 Implementation-URL: http://extensions.xwiki.org?id=com.fii.homework:appl
  ication-homework-api:1.0-SNAPSHOT:::/xwiki-commons-pom/xwiki-platform/x
- wiki-platform-core/parent-platform/fii-parent-platform/application-home
- work/application-homework-api
+ wiki-platform-core/parent-platform/application-homework/application-hom
+ ework-api
 Implementation-Vendor: XWiki Contrib
 Implementation-Vendor-Id: com.fii.homework
 Implementation-Version: 1.0-SNAPSHOT
 Specification-Title: Homework Application - API
 Specification-Vendor: XWiki Contrib
 Specification-Version: 1.0-SNAPSHOT
-Tool: Bnd-3.5.0.201709291849
+Tool: Bnd-4.1.0.201810181252
 XWiki-Extension-Id: com.fii.homework:application-homework-api

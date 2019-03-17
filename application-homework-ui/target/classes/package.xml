@@ -3,7 +3,7 @@
 <package>
 <infos>
 <name>Homework Application - UI</name>
-<description>FII parent pom that depends on xwiki-platform</description>
+<description>Contrib extension which depends on xwiki-platform</description>
 <licence></licence>
 <author>XWiki.Admin</author>
 <extensionId>com.fii.homework:application-homework-ui</extensionId>
@@ -11,14 +11,15 @@
 <backupPack>false</backupPack>
 </infos>
 <files>
-<file language="" defaultAction="0">Homework.Code.HomeworkTemplate</file>
 <file language="" defaultAction="0">Homework.Code.WebHomeSheet</file>
-<file language="" defaultAction="0">Homework.Code.HomeworkTemplateProvider</file>
-<file language="" defaultAction="0">Homework.Code.HomeworkClass</file>
-<file language="" defaultAction="0">Homework.Code.ApplicationsPanelEntry </file>
-<file language="" defaultAction="0">Homework.Code.HomeworkSheet</file>
-<file language="" defaultAction="0">Homework.Code.WebHome</file>
 <file language="" defaultAction="0">Homework.Code.Macros</file>
+<file language="" defaultAction="0">Homework.Code.HomeworkTemplate</file>
+<file language="" defaultAction="0">Homework.Code.HomeworkTemplateProvider</file>
+<file language="" defaultAction="0">Homework.WebPreferences</file>
+<file language="" defaultAction="0">Homework.Code.HomeworkClass</file>
+<file language="" defaultAction="0">Homework.Code.HomeworkSheet</file>
+<file language="" defaultAction="0">Homework.Code.ApplicationsPanelEntry </file>
 <file language="" defaultAction="0">Homework.WebHome</file>
+<file language="" defaultAction="0">Homework.Code.WebHome</file>
 </files>
 </package>
