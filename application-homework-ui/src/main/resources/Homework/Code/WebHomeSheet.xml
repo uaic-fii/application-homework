@@ -43,11 +43,6 @@
 #set($allHomeworks = $services.query.xwql("from doc.object(Homework.Code.HomeworkClass) as homework where doc.fullName &lt;&gt; 'Homework.Code.HomeworkTemplate' order by doc.fullName asc").execute())
 #setHomeworks($allHomeworks)
 
-#if($isStudent)
-#end
-#if($isProfessor)
-#end
-
 #set ($columnsProperties = {
   'doc.title': {'type' : 'text', 'size' : 10, 'link' : 'view'},
   'description': {'type' : 'text', 'html' : 'true'},

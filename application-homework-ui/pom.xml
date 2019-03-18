@@ -36,8 +36,8 @@
   </properties>
   <dependencies>
     <dependency>
-      <groupId>com.fii.curriculum</groupId>
-      <artifactId>application-curriculum-ui</artifactId>
+      <groupId>com.fii.structure</groupId>
+      <artifactId>application-structure-ui</artifactId>
       <version>1.0-SNAPSHOT</version>
       <type>xar</type>
       <scope>runtime</scope>

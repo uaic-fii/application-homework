@@ -53,7 +53,7 @@
       <validationScript/>
       <course>
         <cache>0</cache>
-        <classname>Course.Code.CourseClass</classname>
+        <classname>Structure.Code.CourseClass</classname>
         <customDisplay/>
         <defaultValue/>
         <disabled>0</disabled>
@@ -116,7 +116,7 @@
         <customDisplay/>
         <defaultValue/>
         <disabled>0</disabled>
-        <displayType>input</displayType>
+        <displayType>select</displayType>
         <freeText/>
         <hint/>
         <multiSelect>1</multiSelect>
@@ -126,14 +126,14 @@
         <prettyName>groups</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
+        <separators/>
+        <size>20</size>
         <sort/>
         <unmodifiable>0</unmodifiable>
+        <usesList>0</usesList>
         <validationMessage/>
         <validationRegExp/>
-        <values>value1=A6</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+        <classType>com.xpn.xwiki.objects.classes.GroupsClass</classType>
       </groups>
       <professors>
         <cache>0</cache>
@@ -170,7 +170,7 @@
       <description/>
     </property>
     <property>
-      <groups/>
+      <groups>[]</groups>
     </property>
     <property>
       <professors/>

@@ -38,16 +38,10 @@
   <hidden>true</hidden>
   <content>
 {{velocity}}
-##macro(isStudent)
-  ##set($doc = $xwiki.getDocument($xcontext.getUser()))
-  ##set($object = $doc.getObject('XWiki.XWikiUsers'))
-  ##set ($isStudent = $object.getProperty('isStudent').value)
-##end
-
 #macro(checkUser)
   #set($doc = $xwiki.getDocument($xcontext.getUser()))
-  #set($objectS = $doc.getObject('XWiki.StudentClass'))
-  #set($objectP = $doc.getObject('XWiki.ProfessorClass'))
+  #set($objectS = $doc.getObject('Structure.Code.StudentClass'))
+  #set($objectP = $doc.getObject('Structure.Code.ProfessorClass'))
   #set($isStudent = false)
   #set($isProfessor = false)
   ## TODO: put it in a elif statement, you shouldn't have both?
@@ -59,35 +53,13 @@
   #end
 #end
 
-#macro(isProfessor)
-  #set($doc = $xwiki.getDocument($xcontext.getUser()))
-  #set($object = $doc.getObject('XWiki.ProfessorClass'))
-  #set($isProfessor = false)
-  #if($!object)
-    #set($isProfessor = true)
-  #end
-#end
-
+## TODO: to take from course page =&gt; teachers
 #macro(setProfCourses)
   #set($doc = $xwiki.getDocument($xcontext.getUser()))
-  #set($object = $doc.getObject('XWiki.ProfessorClass'))
+  #set($object = $doc.getObject('Structure.Code.ProfessorClass'))
   #set($subjects = $object.getProperty('subjects').value)
   #set($subjectsList = [])
   #foreach($subject in $subjects)
-    #set($doc = $xwiki.getDocument($subject))
-    #set($discard = $subjectsList.add($doc.title))
-  #end
-#end
-
-#macro(setStudCourses)
-  #set($doc = $xwiki.getDocument($xcontext.getUser()))
-  #set($object = $doc.getObject('XWiki.StudentClass'))
-  #set($year = 'year'+$object.getValue('year'))
-  #set($curricula = $object.getValue('curricula'))
-  #set($doc = $xwiki.getDocument($curricula))
-  #set($subjectsPages = $doc.getValue($year))
-  #set($subjectsList = [])
-  #foreach($subject in $subjectsPages)
     #set($doc = $xwiki.getDocument($subject))
     #set($discard = $subjectsList.add($doc.title))
   #end
@@ -111,20 +83,31 @@
   #set($homeworks = [])
   #checkUser()
   #if($isStudent)
-    #setStudCourses()
+    #set ($studGroups = $xwiki.rightsmanager.getAllGroupsNamesForMember($xcontext.user))
+    #set($studentHomeworks = [])
+    #foreach($homework in $allHomeworks)
+      #set($doc = $xwiki.getDocument($homework))
+      #set($obj = $doc.getObject('Homework.Code.HomeworkClass'))
+      #set($courseGroups = $obj.getValue('groups'))
+      #foreach($group in $studGroups)
+        #if($courseGroups.contains($group))
+          #set($discard = $homeworks.add($homework))
+        #end
+      #end
+    #end
   #else
     #setProfCourses()
-  #end
-
-  #foreach($homework in $allHomeworks)
-    #set($doc = $xwiki.getDocument($homework))
-    #set($obj = $doc.getObject('Homework.Code.HomeworkClass'))
-    #set($course = $obj.getValue('course'))
-    #set($name = $xwiki.getDocument($course).title)
-    #if($subjectsList.contains($name))
-      #set($discard = $homeworks.add($homework))
+    #foreach($homework in $allHomeworks)
+      #set($doc = $xwiki.getDocument($homework))
+      #set($obj = $doc.getObject('Homework.Code.HomeworkClass'))
+      #set($course = $obj.getValue('course'))
+      #set($name = $xwiki.getDocument($course).title)
+      #if($subjectsList.contains($name))
+        #set($discard = $homeworks.add($homework))
+      #end
     #end
   #end
+  ##$homeworks
 #end
 
 {{/velocity}}</content>
