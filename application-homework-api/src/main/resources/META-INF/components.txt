@@ -1,0 +1,2 @@
+com.xwiki.homework.script.HomeworkScriptService
+com.xwiki.homework.internal.DefaultHomeworkManager
