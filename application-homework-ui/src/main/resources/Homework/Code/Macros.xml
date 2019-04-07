@@ -27,9 +27,12 @@
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1553432801000</creationDate>
   <parent>Homework.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1554397638000</date>
+  <contentUpdateDate>1554397638000</contentUpdateDate>
   <version>1.1</version>
   <title>Macros</title>
   <comment/>
@@ -39,75 +42,60 @@
   <content>
 {{velocity}}
 #macro(checkUser)
-  #set($doc = $xwiki.getDocument($xcontext.getUser()))
-  #set($objectS = $doc.getObject('Structure.Code.StudentClass'))
-  #set($objectP = $doc.getObject('Structure.Code.ProfessorClass'))
-  #set($isStudent = false)
-  #set($isProfessor = false)
+  #set ($doc = $xwiki.getDocument($xcontext.getUser()))
+  #set ($objectS = $doc.getObject('Structure.Code.StudentClass'))
+  #set ($objectP = $doc.getObject('Structure.Code.ProfessorClass'))
+  #set ($isStudent = false)
+  #set ($isProfessor = false)
   ## TODO: put it in a elif statement, you shouldn't have both?
-  #if($!objectS)
-    #set($isStudent = true)
+  #if ($!objectS)
+    #set ($isStudent = true)
   #end
-  #if($!objectP)
-    #set($isProfessor = true)
-  #end
-#end
-
-## TODO: to take from course page =&gt; teachers
-#macro(setProfCourses)
-  #set($doc = $xwiki.getDocument($xcontext.getUser()))
-  #set($object = $doc.getObject('Structure.Code.ProfessorClass'))
-  #set($subjects = $object.getProperty('subjects').value)
-  #set($subjectsList = [])
-  #foreach($subject in $subjects)
-    #set($doc = $xwiki.getDocument($subject))
-    #set($discard = $subjectsList.add($doc.title))
-  #end
-#end
-
-#macro(setProfHomeworks $allHomeworks)
-  #set($professorHomeworks = [])
-  #setProfCourses()
-  #foreach($homework in $allHomeworks)
-    #set($doc = $xwiki.getDocument($homework))
-    #set($obj = $doc.getObject('Homework.Code.HomeworkClass'))
-    #set($course = $obj.getValue('course'))
-    #set($name = $xwiki.getDocument($course).title)
-    #if($subjectsList.contains($name))
-      #set($discard = $professorHomeworks.add($homework))
-    #end
+  #if ($!objectP)
+    #set ($isProfessor = true)
   #end
 #end
 
 #macro(setHomeworks $allHomeworks)
-  #set($homeworks = [])
+  #set ($homeworks = [])
   #checkUser()
-  #if($isStudent)
+  #if ($isStudent)
     #set ($studGroups = $xwiki.rightsmanager.getAllGroupsNamesForMember($xcontext.user))
-    #set($studentHomeworks = [])
-    #foreach($homework in $allHomeworks)
-      #set($doc = $xwiki.getDocument($homework))
-      #set($obj = $doc.getObject('Homework.Code.HomeworkClass'))
-      #set($courseGroups = $obj.getValue('groups'))
-      #foreach($group in $studGroups)
-        #if($courseGroups.contains($group))
-          #set($discard = $homeworks.add($homework))
+    #set ($studentHomeworks = [])
+    #foreach ($homework in $allHomeworks)
+      #set ($doc = $xwiki.getDocument($homework))
+      #set ($obj = $doc.getObject('Homework.Code.HomeworkClass'))
+      #set ($courseGroups = $obj.getValue('groups'))
+      #foreach ($group in $studGroups)
+        #if ($courseGroups.contains($group))
+          #set ($discard = $homeworks.add($homework))
         #end
       #end
     #end
   #else
-    #setProfCourses()
-    #foreach($homework in $allHomeworks)
-      #set($doc = $xwiki.getDocument($homework))
-      #set($obj = $doc.getObject('Homework.Code.HomeworkClass'))
-      #set($course = $obj.getValue('course'))
-      #set($name = $xwiki.getDocument($course).title)
-      #if($subjectsList.contains($name))
-        #set($discard = $homeworks.add($homework))
+    #foreach ($homework in $allHomeworks)
+      #set ($userDoc = $xwiki.getDocument($xcontext.getUser()))
+      #set ($name = $userDoc.name)
+      #set ($doc = $xwiki.getDocument($homework))
+      #set ($obj = $doc.getObject('Homework.Code.HomeworkClass'))
+      #set ($professors = $obj.getValue('professors'))
+      #if ($professors.contains($name))
+        #set ($discard = $homeworks.add($homework))
       #end
     #end
   #end
   ##$homeworks
+#end
+
+#macro(displayUploadFile)
+{{html wiki="true"}}
+    &lt;div class="row"&gt;
+          &lt;span&gt;Attach homework in edit mode&lt;/span&gt;
+          &lt;div class="form-group"&gt;
+             {{attachmentSelector classname="Homework.Code.HomeworkClass" buttontext="Attachment" property="attachedDocument" filter="pdf,rar"/}}
+          &lt;/div&gt;
+    &lt;/div&gt;
+{{/html}}
 #end
 
 {{/velocity}}</content>
