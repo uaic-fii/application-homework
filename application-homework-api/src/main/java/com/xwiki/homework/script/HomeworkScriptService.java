@@ -42,8 +42,7 @@ public class HomeworkScriptService implements ScriptService
     private HomeworkManager homework;
 
     /**
-     * Check if the current user has edit right on a comment: the user is the comment creator OR the user has edit right
-     * on the current forum.
+     * Lists attachments name from a page.
      * 
      * @param homeworkDoc the homework document
      * @return a string
@@ -51,5 +50,16 @@ public class HomeworkScriptService implements ScriptService
     public String listAttachments(DocumentReference homeworkReference)
     {
         return homework.getName(homeworkReference);
+    }
+
+    /**
+     * Sets names for attachments.
+     *
+     * @param homeworkDoc the homework document
+     * @return avoid
+     */
+    public void setAttachments(DocumentReference homeworkReference)
+    {
+        homework.setAttachmentsName(homeworkReference);
     }
 }

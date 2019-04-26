@@ -36,6 +36,7 @@ import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xwiki.homework.HomeworkManager;
+import com.xwiki.homework.internal.helpers.Student;
 
 
 /**
@@ -52,6 +53,7 @@ public class DefaultHomeworkManager implements HomeworkManager
 	private XWikiContext xwikiContext;
 	private XWiki xwiki;
 	private XWikiDocument homework;
+	public String homeworkAuthor;
 
     public String getName(DocumentReference homeworkReference)
     {
@@ -74,4 +76,33 @@ public class DefaultHomeworkManager implements HomeworkManager
     	return "is not working";
     }
 
+	public void setAttachmentsName(DocumentReference homeworkReference) {
+		xwikiContext = xcontext.get();
+        xwiki = xwikiContext.getWiki();
+
+        try {
+            homework = xwiki.getDocument(homeworkReference, xwikiContext);
+
+	        List<XWikiAttachment> attachments = homework.getAttachmentList();
+	        if (attachments.size() == 1) {
+                XWikiAttachment attachment = attachments.get(0);
+				homeworkAuthor = attachment.getAuthorReference().getName();
+				
+				Student student = new Student(xwikiContext, new DocumentReference(xwikiContext.getWikiId(), "XWiki", homeworkAuthor));
+				student.getInformations();
+				attachment.setFilename(student.getAttachmentName());
+	        } else {
+	            for(int i=0; i<attachments.size(); i++) {
+					XWikiAttachment attachment = attachments.get(i);
+					homeworkAuthor = attachment.getAuthorReference().getName();
+					
+					Student student = new Student(xwikiContext, new DocumentReference(xwikiContext.getWikiId(), "XWiki", homeworkAuthor));
+					student.getInformations();
+					attachment.setFilename(student.getAttachmentName());
+				}
+	        }
+        } catch (XWikiException e) {
+            e.printStackTrace();
+        }
+	}
 }

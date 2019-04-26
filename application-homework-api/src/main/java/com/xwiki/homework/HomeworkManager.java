@@ -30,11 +30,20 @@ import org.xwiki.model.reference.DocumentReference;
 public interface HomeworkManager
 {
 	/**
-     * Create an archive with all attachments from all document of homework type
+     * For testing. To be removed
      *
      * @param homeworkReference the homework reference
      * @return a string
      */
     public String getName(DocumentReference homeworkReference);
+
+
+    /**
+     * Sets attachments name.
+     *
+     * @param homeworkReference the homework reference
+     * @return void
+     */
+    public void setAttachmentsName(DocumentReference homeworkReference);
     
 }
