@@ -23,7 +23,13 @@ package com.xwiki.homework.internal;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.inject.Singleton;
 
@@ -32,11 +38,14 @@ import org.xwiki.model.reference.DocumentReference;
 
 import com.xpn.xwiki.doc.XWikiAttachment;
 import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.web.XWikiResponse;
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xwiki.homework.HomeworkManager;
 import com.xwiki.homework.internal.helpers.Student;
+
+import org.apache.commons.io.IOUtils;
 
 
 /**
@@ -84,25 +93,94 @@ public class DefaultHomeworkManager implements HomeworkManager
             homework = xwiki.getDocument(homeworkReference, xwikiContext);
 
 	        List<XWikiAttachment> attachments = homework.getAttachmentList();
-	        if (attachments.size() == 1) {
-                XWikiAttachment attachment = attachments.get(0);
+
+            for(int i=0; i<attachments.size(); i++) {
+				XWikiAttachment attachment = attachments.get(i);
 				homeworkAuthor = attachment.getAuthorReference().getName();
 				
 				Student student = new Student(xwikiContext, new DocumentReference(xwikiContext.getWikiId(), "XWiki", homeworkAuthor));
 				student.getInformations();
 				attachment.setFilename(student.getAttachmentName());
-	        } else {
-	            for(int i=0; i<attachments.size(); i++) {
-					XWikiAttachment attachment = attachments.get(i);
-					homeworkAuthor = attachment.getAuthorReference().getName();
-					
-					Student student = new Student(xwikiContext, new DocumentReference(xwikiContext.getWikiId(), "XWiki", homeworkAuthor));
-					student.getInformations();
-					attachment.setFilename(student.getAttachmentName());
-				}
-	        }
+			}
         } catch (XWikiException e) {
             e.printStackTrace();
         }
 	}
+	
+	public void downloadAllAttachments(DocumentReference homeworkReference) {
+		xwikiContext = xcontext.get();
+        xwiki = xwikiContext.getWiki();
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ZipOutputStream zos = new ZipOutputStream(baos);
+        final int BUFFER = 2048;
+        byte buffer[] = new byte[BUFFER];
+
+        try {
+            homework = xwiki.getDocument(homeworkReference, xwikiContext);
+
+            List<XWikiAttachment> attachments = homework.getAttachmentList();
+
+            for(int i=0; i<attachments.size(); i++) {
+                XWikiAttachment attachment = attachments.get(i);
+
+                // Create the entry
+                ZipEntry ze= new ZipEntry(attachment.getFilename());
+                zos.putNextEntry(ze);
+
+                // Write the content.
+                InputStream inputStream = attachment.getContentInputStream(xwikiContext);
+                int length;
+                while ((length = inputStream.read(buffer)) >= 0) {
+                   zos.write(buffer, 0, length);
+	            }
+
+                // Close the entry.
+                zos.closeEntry();
+            }
+
+            zos.close();
+
+            // Add the archive to an attachment.
+            XWikiAttachment attachmentZip = new XWikiAttachment();
+            attachmentZip.setContent(new ByteArrayInputStream(baos.toByteArray()));
+            attachmentZip.setFilename(homeworkReference.getName() + ".zip");
+
+            // Download the attachment.
+            download(xwikiContext, attachmentZip);
+
+            baos.close();
+        } catch (XWikiException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void download(XWikiContext xwikiContext, XWikiAttachment attachment) {
+		InputStream stream = null;
+        try {
+            XWikiResponse response = xwikiContext.getResponse();
+
+            response.addHeader("Content-disposition", "attachment;filename=\"" + attachment.getFilename() + "\"");
+            response.setDateHeader("Last-Modified", attachment.getDate().getTime());
+            response.setContentType("application/download");
+
+            response.setHeader("Accept-Ranges", "bytes");
+            response.setContentLength((int) attachment. getContentLongSize(xwikiContext));
+
+            stream = attachment.getContentInputStream(xwikiContext);
+            IOUtils.copy(stream, response.getOutputStream());
+            response.flushBuffer();
+        }
+        catch (IOException ignored) { }
+        catch (XWikiException ignored) { }
+        finally {
+            if (stream != null) {
+                IOUtils.closeQuietly(stream);
+            }
+        }
+	}
+	
 }

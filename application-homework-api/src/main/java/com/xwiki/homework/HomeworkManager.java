@@ -22,6 +22,9 @@ package com.xwiki.homework;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.model.reference.DocumentReference;
 
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.doc.XWikiAttachment;
+
 /**
  * @version $Id$
  * @since 1.0
@@ -46,4 +49,20 @@ public interface HomeworkManager
      */
     public void setAttachmentsName(DocumentReference homeworkReference);
     
+    /**
+     * Download all attachments of a homework.
+     *
+     * @param homeworkReference the homework reference
+     * @return void
+     */
+    public void downloadAllAttachments(DocumentReference homeworkReference);
+
+    /**
+     * Download to browser.
+     *
+     * @param homeworkReference the homework reference
+     * @return void
+     */
+    public void download(XWikiContext xwikiContext, XWikiAttachment attachment);
+
 }
