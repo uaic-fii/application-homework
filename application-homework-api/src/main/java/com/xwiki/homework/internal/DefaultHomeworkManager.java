@@ -77,35 +77,13 @@ public class DefaultHomeworkManager implements HomeworkManager
 	        	String fileName = attachment.getFilename();
 	            return fileName;
 	        } else {
-	            return "to work on it";
+	            return "rd";
 	        }
     	} catch (XWikiException e) {
     		e.printStackTrace();
     	}
     	return "is not working";
     }
-
-	public void setAttachmentsName(DocumentReference homeworkReference) {
-		xwikiContext = xcontext.get();
-        xwiki = xwikiContext.getWiki();
-
-        try {
-            homework = xwiki.getDocument(homeworkReference, xwikiContext);
-
-	        List<XWikiAttachment> attachments = homework.getAttachmentList();
-
-            for(int i=0; i<attachments.size(); i++) {
-				XWikiAttachment attachment = attachments.get(i);
-				homeworkAuthor = attachment.getAuthorReference().getName();
-				
-				Student student = new Student(xwikiContext, new DocumentReference(xwikiContext.getWikiId(), "XWiki", homeworkAuthor));
-				student.getInformations();
-				attachment.setFilename(student.getAttachmentName());
-			}
-        } catch (XWikiException e) {
-            e.printStackTrace();
-        }
-	}
 	
 	public void downloadAllAttachments(DocumentReference homeworkReference) {
 		xwikiContext = xcontext.get();
@@ -124,8 +102,13 @@ public class DefaultHomeworkManager implements HomeworkManager
             for(int i=0; i<attachments.size(); i++) {
                 XWikiAttachment attachment = attachments.get(i);
 
+                // Get the author of the attachment.
+                homeworkAuthor = attachment.getAuthorReference().getName();
+                Student student = new Student(xwikiContext, new DocumentReference(xwikiContext.getWikiId(), "XWiki", homeworkAuthor));
+				student.getInformations();
+
                 // Create the entry
-                ZipEntry ze= new ZipEntry(attachment.getFilename());
+                ZipEntry ze= new ZipEntry(student.getAttachmentName());
                 zos.putNextEntry(ze);
 
                 // Write the content.

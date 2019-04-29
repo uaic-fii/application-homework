@@ -52,16 +52,6 @@ public class HomeworkScriptService implements ScriptService
         return homework.getName(homeworkReference);
     }
 
-    /**
-     * Sets names for attachments.
-     *
-     * @param homeworkDoc the homework document
-     * @return avoid
-     */
-    public void setAttachments(DocumentReference homeworkReference)
-    {
-        homework.setAttachmentsName(homeworkReference);
-    }
 
     /**
      * Downloads attachments of a page.

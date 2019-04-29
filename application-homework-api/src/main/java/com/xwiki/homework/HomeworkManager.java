@@ -40,14 +40,6 @@ public interface HomeworkManager
      */
     public String getName(DocumentReference homeworkReference);
 
-
-    /**
-     * Sets attachments name.
-     *
-     * @param homeworkReference the homework reference
-     * @return void
-     */
-    public void setAttachmentsName(DocumentReference homeworkReference);
     
     /**
      * Download all attachments of a homework.
