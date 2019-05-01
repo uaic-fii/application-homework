@@ -32,15 +32,6 @@ import com.xpn.xwiki.doc.XWikiAttachment;
 @Role
 public interface HomeworkManager
 {
-	/**
-     * For testing. To be removed
-     *
-     * @param homeworkReference the homework reference
-     * @return a string
-     */
-    public String getName(DocumentReference homeworkReference);
-
-    
     /**
      * Download all attachments of a homework.
      *
@@ -56,5 +47,13 @@ public interface HomeworkManager
      * @return void
      */
     public void download(XWikiContext xwikiContext, XWikiAttachment attachment);
+
+    /**
+     * Checks if the deadline is over.
+     *
+     * @param homeworkReference the homework reference
+     * @return void
+     */
+    public Boolean isBeforeDeadline(DocumentReference homeworkReference);
 
 }

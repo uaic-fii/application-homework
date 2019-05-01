@@ -39,19 +39,7 @@ import com.xwiki.homework.HomeworkManager;
 public class HomeworkScriptService implements ScriptService
 {
     @Inject
-    private HomeworkManager homework;
-
-    /**
-     * Lists attachments name from a page.
-     * 
-     * @param homeworkDoc the homework document
-     * @return a string
-     */
-    public String listAttachments(DocumentReference homeworkReference)
-    {
-        return homework.getName(homeworkReference);
-    }
-
+    private HomeworkManager homeworkManager;
 
     /**
      * Downloads attachments of a page.
@@ -61,6 +49,17 @@ public class HomeworkScriptService implements ScriptService
      */
     public void downloadAttachments(DocumentReference homeworkReference)
     {
-        homework.downloadAllAttachments(homeworkReference);
+       homeworkManager.downloadAllAttachments(homeworkReference);
+    }
+
+    /**
+     * Checks if it's past deadline.
+     *
+     * @param homeworkDoc the homework document
+     * @return avoid
+     */
+    public Boolean canUploadHomework(DocumentReference homeworkReference)
+    {
+       return homeworkManager.isBeforeDeadline(homeworkReference);
     }
 }

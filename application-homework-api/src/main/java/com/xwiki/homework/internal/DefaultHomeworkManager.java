@@ -43,6 +43,7 @@ import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xwiki.homework.HomeworkManager;
+import com.xwiki.homework.internal.helpers.Homework;
 import com.xwiki.homework.internal.helpers.Student;
 
 import org.apache.commons.io.IOUtils;
@@ -63,27 +64,6 @@ public class DefaultHomeworkManager implements HomeworkManager
 	private XWiki xwiki;
 	private XWikiDocument homework;
 	public String homeworkAuthor;
-
-    public String getName(DocumentReference homeworkReference)
-    {
-    	xwikiContext = xcontext.get();
-    	xwiki = xwikiContext.getWiki();
-    	try {
-	    	homework = xwiki.getDocument(homeworkReference, xwikiContext);
-	    	
-	        List<XWikiAttachment> attachments = homework.getAttachmentList();
-	        if (attachments.size() == 1) {
-	        	XWikiAttachment attachment = attachments.get(0);
-	        	String fileName = attachment.getFilename();
-	            return fileName;
-	        } else {
-	            return "rd";
-	        }
-    	} catch (XWikiException e) {
-    		e.printStackTrace();
-    	}
-    	return "is not working";
-    }
 	
 	public void downloadAllAttachments(DocumentReference homeworkReference) {
 		xwikiContext = xcontext.get();
@@ -163,6 +143,13 @@ public class DefaultHomeworkManager implements HomeworkManager
                 IOUtils.closeQuietly(stream);
             }
         }
+	}
+	
+	public Boolean isBeforeDeadline(DocumentReference homeworkReference) {
+		xwikiContext = xcontext.get();
+		
+		Homework home = new Homework(xwikiContext, homeworkReference);
+        return home.isBeforeDeadline();
 	}
 	
 }
