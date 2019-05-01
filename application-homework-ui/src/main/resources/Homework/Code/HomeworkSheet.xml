@@ -42,35 +42,66 @@
   <content>{{include reference="Homework.Code.Macros"/}}
 
 {{velocity}}
-## You can modify this page to customize the presentation of your object.
-## At first you should keep the default presentation and just save the document.
+#set ($discard = $xwiki.jsx.use('Homework.Code.JavascriptExtension'))
+#checkUser()
 
-#set ($class = $doc.getObject('Homework.Code.HomeworkClass').xWikiClass)
-#foreach ($prop in $class.properties)
-  ; $doc.displayPrettyName($prop.name)
-  : $doc.display($prop.name)
-#end
+{{html clean="false" wiki="true"}}
+&lt;div class="row"&gt;
+  ## Description
+  &lt;div class="col-xs-12"&gt;
+    ; &lt;label #if ($xcontext.action == 'edit')for="Homework.Code.HomeworkClass_0_description"#end&gt;
+      $services.localization.render('homework.description.label')
+    &lt;/label&gt;
+    : $doc.display('description')
+  &lt;/div&gt;
+&lt;/div&gt;
 
-##set ($docRef   = $services.model.createDocumentReference('', 'Homework', 'Tema1'))
-##$services.homework.listAttachments($docRef)
+&lt;div class="row"&gt;
+  ## Deadline
+  &lt;div class="col-xs-12 col-md-6"&gt;
+    ; &lt;label #if ($xcontext.action == 'edit')for="Homework.Code.HomeworkClass_0_deadline"#end&gt;
+      $services.localization.render('homework.deadline.label')
+    &lt;/label&gt;
+    : $doc.display('deadline')
+  &lt;/div&gt;
 
-##get groups of this homework  TODO: macro for all the groups
-#set ($class = $doc.getObject('Homework.Code.HomeworkClass'))
-#set ($groups = $class.getValue('groups'))
-#foreach ($group in $groups)
-  #set ($name = $group + 'List')
-  #set ($name = [])
-#end
+  ## Groups
+  &lt;div class="col-xs-12 col-md-6"&gt;
+    ; &lt;label #if ($xcontext.action == 'edit')for="Homework.Code.HomeworkClass_0_groups"#end&gt;
+      $services.localization.render('homework.groups.label')
+    &lt;/label&gt;
+    : $doc.display('groups')
+  &lt;/div&gt;
+&lt;/div&gt;
 
-#set ($list3A2 = [])
+&lt;div class="row"&gt;
+  ## Course
+  &lt;div class="col-xs-12 col-md-6"&gt;
+    ; &lt;label #if ($xcontext.action == 'edit')for="Homework.Code.HomeworkClass_0_course"#end&gt;
+      $services.localization.render('homework.course.label')
+    &lt;/label&gt;
+    : $doc.display('course')
+  &lt;/div&gt;
 
-## put attachments on groups lists
-#set ($attachmentsList = $doc.attachmentList)
-#foreach ($attachment in $attachmentsList)
-  #set ($authorPage = $xwiki.getDocument($attachment.author))
-  #set ($group = $authorPage.getObject('XWiki.StudentClass').getValue('group'))
-#end
+  ## Professors
+  &lt;div class="col-xs-12 col-md-6"&gt;
+    ; &lt;label #if ($xcontext.action == 'edit')for="Homework.Code.HomeworkClass_0_professors"#end&gt;
+      $services.localization.render('homework.professors.label')
+    &lt;/label&gt;
+    : $doc.display('professors')
+  &lt;/div&gt;
+&lt;/div&gt;
 
+&lt;/br&gt;
+&lt;/br&gt;
+## Upload files
 #displayUploadFile()
+
+## Download all
+#displayDownloadAll()
+
+{{/html}}
+
+
 {{/velocity}}</content>
 </xwikidoc>

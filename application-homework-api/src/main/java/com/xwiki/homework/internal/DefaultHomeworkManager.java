@@ -105,7 +105,6 @@ public class DefaultHomeworkManager implements HomeworkManager
                 // Get the author of the attachment.
                 homeworkAuthor = attachment.getAuthorReference().getName();
                 Student student = new Student(xwikiContext, new DocumentReference(xwikiContext.getWikiId(), "XWiki", homeworkAuthor));
-				student.getInformations();
 
                 // Create the entry
                 ZipEntry ze= new ZipEntry(student.getAttachmentName());

@@ -42,12 +42,11 @@
   <content>
 {{velocity}}
 #macro(checkUser)
-  #set ($doc = $xwiki.getDocument($xcontext.getUser()))
-  #set ($objectS = $doc.getObject('Structure.Code.StudentClass'))
-  #set ($objectP = $doc.getObject('Structure.Code.ProfessorClass'))
+  #set ($hdoc = $xwiki.getDocument($xcontext.getUser()))
+  #set ($objectS = $hdoc.getObject('Structure.Code.StudentClass'))
+  #set ($objectP = $hdoc.getObject('Structure.Code.ProfessorClass'))
   #set ($isStudent = false)
   #set ($isProfessor = false)
-  ## TODO: put it in a elif statement, you shouldn't have both?
   #if ($!objectS)
     #set ($isStudent = true)
   #end
@@ -84,18 +83,47 @@
       #end
     #end
   #end
-  ##$homeworks
 #end
 
+## For this to be seen in view mode the AttachmentSelector macro code must be modified.
 #macro(displayUploadFile)
-{{html wiki="true"}}
-    &lt;div class="row"&gt;
-          &lt;span&gt;Attach homework in edit mode&lt;/span&gt;
-          &lt;div class="form-group"&gt;
-             {{attachmentSelector classname="Homework.Code.HomeworkClass" buttontext="Attachment" property="attachedDocument" filter="pdf,rar"/}}
-          &lt;/div&gt;
+## Check deadline
+#set ($object = $doc.getObject('Homework.Code.HomeworkClass'))
+#set ($deadline = $object.getValue('deadline'))
+#set ($today = $datetool.getSystemDate())
+#set ($dateDiff = $datetool.difference($today, $deadline))
+
+#if($dateDiff.minutes&gt;=0)
+  &lt;div class="form-group row"&gt;
+    &lt;div class="col-sm-12 col-md-4"&gt;
+      &lt;label&gt;
+      #if($isStudent)
+        $services.localization.render('homework.attachStudent.label')
+      #else
+        $services.localization.render('homework.attachProfessor.label')
+      #end
+      &lt;/label&gt;
     &lt;/div&gt;
-{{/html}}
+    &lt;div class="col-sm-12 col-md-4"&gt;
+      {{attachmentSelector classname="Homework.Code.HomeworkClass" buttontext="Attach a file" property="attachedDocument" filter="pdf,rar,jpg,png" link="true" savemode="direct"/}}
+    &lt;/div&gt;
+  &lt;/div&gt;
+#end
+#end
+
+#macro(displayDownloadAll)
+#if(!$isProfessor)
+  &lt;div class="form-group row"&gt;
+    &lt;div class="col-xs-12 col-md-4"&gt;
+      &lt;label&gt;
+        $services.localization.render('homework.download.label')
+      &lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="col-xs-12 col-md-4"&gt;
+      &lt;input class="btn btn-primary" id="download" value="Download all homeworks"/&gt;
+    &lt;/div
+  &lt;/div&gt;
+#end
 #end
 
 {{/velocity}}</content>
