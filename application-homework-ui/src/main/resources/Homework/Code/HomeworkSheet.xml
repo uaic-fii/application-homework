@@ -99,9 +99,39 @@
 
 ## Download all
 #displayDownloadAll()
-
 {{/html}}
+{{/velocity}}
 
+{{velocity}}
+#if($context.action == 'view')
+  ##changeLocation()
 
+  #set ($columnsProperties = {
+    'doc.fullName': {'type': 'text', 'size': 10, 'link': 'view'},
+    'group': {'type': 'text', 'html': 'true'},
+    'series': {'type': 'text', 'html': 'true'},
+    '_actions': {'html': true, 'sortable': false, 'actions': ['edit', 'delete']}
+  })
+
+  ## URL for options
+  #set ($queryString = $escapetool.url({
+    'xpage': 'plain',
+    'outputSyntax': 'plain',
+    'classname': 'Structure.Code.StudentClass',
+    'collist': 'doc.fullName,group,series,_actions',
+    'rowCount': 15,
+    'maxPages': 10,
+    'selectedColumn': 'doc.fullName',
+    'defaultOrder': 'desc',
+    'homeworkDoc': $doc
+  }))
+  #set ($livetabelURL = $xwiki.getURL('Homework.Code.StudentsJSON', 'get', $queryString))
+
+  #set ($options = {
+    'url' : $livetabelURL
+  })
+  #set ($columns = ['doc.fullName', 'group', 'series', '_actions'])
+  #livetable('students' $columns $columnsProperties $options)
+#end
 {{/velocity}}</content>
 </xwikidoc>

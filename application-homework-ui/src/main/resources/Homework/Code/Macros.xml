@@ -54,7 +54,7 @@
     #set ($isProfessor = true)
   #end
 #end
-
+## Sets the homeworks to be seen in WebHome livetable.
 #macro(setHomeworks $allHomeworks)
   #set ($homeworks = [])
   #checkUser()
@@ -72,17 +72,35 @@
       #end
     #end
   #else
-    #foreach ($homework in $allHomeworks)
-      #set ($userDoc = $xwiki.getDocument($xcontext.getUser()))
-      #set ($name = $userDoc.name)
-      #set ($doc = $xwiki.getDocument($homework))
-      #set ($obj = $doc.getObject('Homework.Code.HomeworkClass'))
-      #set ($professors = $obj.getValue('professors'))
-      #if ($professors.contains($name))
-        #set ($discard = $homeworks.add($homework))
+    #foreach($homework in $allHomeworks)
+      #set($userDoc = $xwiki.getDocument($xcontext.getUser()))
+      #set($name = $userDoc.name)
+      #set($doc = $xwiki.getDocument($homework))
+      #set($obj = $doc.getObject('Homework.Code.HomeworkClass'))
+      #set($professors = $obj.getValue('professors'))
+      #if($professors.contains($name))
+        #set($discard = $homeworks.add($homework))
       #end
     #end
   #end
+#end
+
+## Sets the students to be seen in homework page. Used in livetable.
+#macro(setStudents $allStudents $homework)
+#set ($homeworkReference = $services.model.createDocumentReference('', 'Homework', $homework.split('\.')[1]))
+#set ($doc = $xwiki.getDocument($homeworkReference))
+#set ($obj = $doc.getObject('Homework.Code.HomeworkClass'))
+#set ($courseGroups = $obj.getValue('groups'))
+#set ($students = [])
+#foreach($stud in $allStudents)
+  #set ($studReference = $services.model.createDocumentReference('', 'XWiki', $stud.split('\.')[1]))
+  #set ($studGroups = $services.user.group.getGroupsFromMemberAndCurrentWiki($studReference))
+  #foreach ($group in $studGroups)
+    #if ($courseGroups.contains($group.name))
+      #set ($discard = $students.add($stud))
+    #end
+  #end
+#end
 #end
 
 ## For this to be seen in view mode the AttachmentSelector macro code must be modified.
@@ -92,8 +110,7 @@
 #set ($deadline = $object.getValue('deadline'))
 #set ($today = $datetool.getSystemDate())
 #set ($dateDiff = $datetool.difference($today, $deadline))
-
-#if($dateDiff.minutes&gt;=0)
+#if($dateDiff.minutes&gt;=0 &amp;&amp; $xcontext.action == 'view')
   &lt;div class="form-group row"&gt;
     &lt;div class="col-sm-12 col-md-4"&gt;
       &lt;label&gt;
@@ -110,9 +127,8 @@
   &lt;/div&gt;
 #end
 #end
-
 #macro(displayDownloadAll)
-#if(!$isProfessor)
+#if($isProfessor &amp;&amp; $xcontext.action == 'view')
   &lt;div class="form-group row"&gt;
     &lt;div class="col-xs-12 col-md-4"&gt;
       &lt;label&gt;
