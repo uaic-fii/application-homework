@@ -105,7 +105,7 @@
 #end
 
 ## For this to be seen in view mode the AttachmentSelector macro code must be modified.
-#macro(displayUploadFile)
+#macro(displayUploadFile2)
 ## Check deadline
 #set ($object = $doc.getObject('Homework.Code.HomeworkClass'))
 #set ($deadline = $object.getValue('deadline'))
@@ -168,7 +168,7 @@
 #end
 #macro(makePageNested)
 #if(($doc.getParent() != 'Homework.WebHome'))
-  #if ($doc.name != 'WebHome')
+  #if ($doc.name != 'WebHome' &amp;&amp; $doc.name != 'HomeworkSheet')
     ## Get reference to the page before making it nested.
     #getCourseName()
     #set ($docName = $doc.name)
@@ -179,6 +179,24 @@
     #set ($deleteRequest = $services.refactoring.delete($toDeleteDoc).join())
   #end
 #end
+#end
+#macro(displayUploadFile)
+## Create the child document if it doesn't exists.
+#getCourseName()
+#set ($hwName = $doc.fullName.split('\.')[2])
+#set ($userHwName = $xcontext.user.split('\.')[1])
+#set ($userDocRef = $services.model.createDocumentReference('', ['Homework', $courseName, $hwName], $userHwName))
+#set ($userDoc  = $xwiki.getDocument($userDocRef))
+#set ($discard = $userDoc.save())
+## Upload on the student page.
+&lt;form method="post" action="$userDoc.getURL('upload')" enctype="multipart/form-data" &gt;
+  &lt;input type="hidden" value="$!{services.csrf.getToken()}" name="form_token"/&gt;
+  &lt;input type="hidden" value="$doc.getURL('view')" name="xredirect" /&gt;
+  File:
+  &lt;input type="file" name="filepath" id="file" /&gt;
+  &lt;br/&gt;
+  &lt;input type="submit" value="Upload" name="upload" id="upload" /&gt;
+&lt;/form&gt;
 #end
 {{/velocity}}</content>
 </xwikidoc>

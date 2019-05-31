@@ -94,11 +94,9 @@
 
 &lt;/br&gt;
 &lt;/br&gt;
-## Upload files
-#displayUploadFile()
-
-## Download all
-#displayDownloadAll()
+#if($context.action == 'view' &amp;&amp; $doc.getParent() != 'Homework.WebHome')
+  #displayUploadFile()
+#end
 {{/html}}
 {{/velocity}}
 
