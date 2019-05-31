@@ -87,7 +87,8 @@
 
 ## Sets the students to be seen in homework page. Used in livetable.
 #macro(setStudents $allStudents $homework)
-#set ($homeworkReference = $services.model.createDocumentReference('', 'Homework', $homework.split('\.')[1]))
+#set ($course = $homework.split('\.')[1])
+#set ($homeworkReference = $services.model.createDocumentReference('', ['Homework', $course], $homework.split('\.')[2]))
 #set ($doc = $xwiki.getDocument($homeworkReference))
 #set ($obj = $doc.getObject('Homework.Code.HomeworkClass'))
 #set ($courseGroups = $obj.getValue('groups'))
@@ -136,11 +137,48 @@
       &lt;/label&gt;
     &lt;/div&gt;
     &lt;div class="col-xs-12 col-md-4"&gt;
-      &lt;input class="btn btn-primary" id="download" value="Download all homeworks"/&gt;
+      &lt;input class="btn btn-primary" type="button" id="download" value="Download all homeworks"/&gt;
     &lt;/div
   &lt;/div&gt;
 #end
 #end
-
+#macro(getCourseName)
+  #set ($object = $doc.getObject('Homework.Code.HomeworkClass'))
+  #set ($course = $object.getValue('course').split('\.')[1])
+  #set ($courseName = $course.split('Description')[0])
+#end
+#macro(changeLocation)
+#if(($doc.getParent() == 'Homework.WebHome'))
+  ## Get the parent name.
+  #getCourseName()
+  ## Get the parent reference.
+  #set ($courseRef = $services.model.createDocumentReference('', 'Homework', $courseName))
+  #set ($courseDoc  = $xwiki.getDocument($courseRef))
+  #set ($discard = $courseDoc.save())
+  ## Move the page.
+  #set ($source = $services.model.resolveDocument($doc))
+  #set ($destination = $services.model.resolveSpace($courseDoc))
+  #set ($moveRequest = $services.refactoring.move($source, $destination))
+  #set ($discard = $moveRequest.join())
+  ## Delete redirect page.
+  #set ($toDeleteRef = $services.model.createDocumentReference('', 'Homework', $courseName))
+  #set ($toDeleteDoc = $services.model.resolveDocument($toDeleteRef))
+  #set ($moveRequest = $services.refactoring.delete($toDeleteDoc).join())
+#end
+#end
+#macro(makePageNested)
+#if(($doc.getParent() != 'Homework.WebHome'))
+  #if ($doc.name != 'WebHome')
+    ## Get reference to the page before making it nested.
+    #getCourseName()
+    #set ($docName = $doc.name)
+    #set ($toDeleteRef = $services.model.createDocumentReference('', ['Homework', $courseName], $doc.name))
+    #set ($toDeleteDoc = $services.model.resolveDocument($toDeleteRef))
+    ## Make the page nested and delete the redirect.
+    #set ($discard = $services.refactoring.convertToNestedDocument($doc).join())
+    #set ($deleteRequest = $services.refactoring.delete($toDeleteDoc).join())
+  #end
+#end
+#end
 {{/velocity}}</content>
 </xwikidoc>

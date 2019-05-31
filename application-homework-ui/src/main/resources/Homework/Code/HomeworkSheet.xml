@@ -104,7 +104,8 @@
 
 {{velocity}}
 #if($context.action == 'view')
-  ##changeLocation()
+  #changeLocation()
+  #makePageNested()
 
   #set ($columnsProperties = {
     'doc.fullName': {'type': 'text', 'size': 10, 'link': 'view'},
