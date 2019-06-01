@@ -181,15 +181,17 @@
 #end
 #end
 #macro(displayUploadFile)
-## Create the child document if it doesn't exists.
+## Create the upload document if it doesn't exists.
 #getCourseName()
 #set ($hwName = $doc.fullName.split('\.')[2])
-#set ($userHwName = $xcontext.user.split('\.')[1])
-#set ($userDocRef = $services.model.createDocumentReference('', ['Homework', $courseName, $hwName], $userHwName))
-#set ($userDoc  = $xwiki.getDocument($userDocRef))
-#set ($discard = $userDoc.save())
-## Upload on the student page.
-&lt;form method="post" action="$userDoc.getURL('upload')" enctype="multipart/form-data" &gt;
+#set ($uploadDocName = $xcontext.user.split('\.')[1])
+#set ($uploadDocRef = $services.model.createDocumentReference('', ['Homework', $courseName, $hwName], $uploadDocName))
+#set ($uploadDoc = $xwiki.getXWiki().getDocument($uploadDocRef, $xcontext.context))
+#set ($discard = $uploadDoc.setAuthorReference($services.model.createDocumentReference('','XWiki','Admin')))
+#set ($discard = $xwiki.getXWiki().saveDocument($uploadDoc, 'Created upload page', true, $xcontext.context))
+#set ($uploadDoc = $xwiki.getDocument($uploadDocRef))
+## Upload form.
+&lt;form method="post" action="$uploadDoc.getURL('upload')" enctype="multipart/form-data" &gt;
   &lt;input type="hidden" value="$!{services.csrf.getToken()}" name="form_token"/&gt;
   &lt;input type="hidden" value="$doc.getURL('view')" name="xredirect" /&gt;
   File:
