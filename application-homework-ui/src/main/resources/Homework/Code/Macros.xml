@@ -180,24 +180,39 @@
   #end
 #end
 #end
-#macro(displayUploadFile)
-## Create the upload document if it doesn't exists.
+## Where to upoad the files
+#macro(getUploadDoc)
 #getCourseName()
 #set ($hwName = $doc.fullName.split('\.')[2])
 #set ($uploadDocName = $xcontext.user.split('\.')[1])
 #set ($uploadDocRef = $services.model.createDocumentReference('', ['Homework', $courseName, $hwName], $uploadDocName))
-#set ($uploadDoc = $xwiki.getXWiki().getDocument($uploadDocRef, $xcontext.context))
-#set ($discard = $uploadDoc.setAuthorReference($services.model.createDocumentReference('','XWiki','Admin')))
-#set ($discard = $xwiki.getXWiki().saveDocument($uploadDoc, 'Created upload page', true, $xcontext.context))
+#if (!$xwiki.exists($uploadDocRef))
+  #set ($uploadDoc = $xwiki.getXWiki().getDocument($uploadDocRef, $xcontext.context))
+  #set ($discard = $uploadDoc.setAuthorReference($services.model.createDocumentReference('','XWiki','Admin')))
+  #set ($discard = $xwiki.getXWiki().saveDocument($uploadDoc, 'Created upload page', true, $xcontext.context))
+#end
 #set ($uploadDoc = $xwiki.getDocument($uploadDocRef))
+#set($hasUploadObj = false)
+#if($uploadDoc.getObject('Homework.Code.UploadClass'))
+  #set($hasUploadObj = true)
+#end
+#end
 ## Upload form.
-&lt;form method="post" action="$uploadDoc.getURL('upload')" enctype="multipart/form-data" &gt;
-  &lt;input type="hidden" value="$!{services.csrf.getToken()}" name="form_token"/&gt;
-  &lt;input type="hidden" value="$doc.getURL('view')" name="xredirect" /&gt;
-  File:
-  &lt;input type="file" name="filepath" id="file" /&gt;
-  &lt;br/&gt;
-  &lt;input type="submit" value="Upload" name="upload" id="upload" /&gt;
+#macro(displayUploadFile)
+#getUploadDoc()
+&lt;form method='post' action="$uploadDoc.getURL('upload')" enctype='multipart/form-data' &gt;
+  &lt;input type='hidden' value="$!{services.csrf.getToken()}" name='form_token'/&gt;
+  &lt;input type='hidden' value="$doc.getURL('view')" name='xredirect' /&gt;
+  &lt;input type='file' name='filepath' id='file' /&gt;
+  &lt;div id='responseContainer' class='hidden'&gt;&lt;/div&gt;
+&lt;/form&gt;
+#end
+#macro(displaySetAuthors)
+$uploadDoc.use('Homework.Code.UploadClass')
+&lt;form method='post' action="$xwiki.getURL($uploadDoc, 'saveandcontinue')" class="xform half"&gt;
+  &lt;input type='hidden' value="$!{services.csrf.getToken()}" name='form_token'/&gt;
+  $uploadDoc.display('authors','edit')
+  &lt;input class='button' type='submit' name='formactionsac' value="$services.localization.render('admin.save')" /&gt;
 &lt;/form&gt;
 #end
 {{/velocity}}</content>

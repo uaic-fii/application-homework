@@ -45,47 +45,47 @@
 #set ($discard = $xwiki.jsx.use('Homework.Code.JavascriptExtension'))
 #checkUser()
 
-{{html clean="false" wiki="true"}}
+{{html clean='false' wiki='true'}}
 &lt;div class="row"&gt;
   ## Description
-  &lt;div class="col-xs-12"&gt;
-    ; &lt;label #if ($xcontext.action == 'edit')for="Homework.Code.HomeworkClass_0_description"#end&gt;
+  &lt;div class='col-xs-12'&gt;
+    ; &lt;label #if ($xcontext.action == 'edit')for='Homework.Code.HomeworkClass_0_description'#end&gt;
       $services.localization.render('homework.description.label')
     &lt;/label&gt;
     : $doc.display('description')
   &lt;/div&gt;
 &lt;/div&gt;
 
-&lt;div class="row"&gt;
+&lt;div class='row'&gt;
   ## Deadline
-  &lt;div class="col-xs-12 col-md-6"&gt;
-    ; &lt;label #if ($xcontext.action == 'edit')for="Homework.Code.HomeworkClass_0_deadline"#end&gt;
+  &lt;div class='col-xs-12 col-md-6'&gt;
+    ; &lt;label #if ($xcontext.action == 'edit')for='Homework.Code.HomeworkClass_0_deadline'#end&gt;
       $services.localization.render('homework.deadline.label')
     &lt;/label&gt;
     : $doc.display('deadline')
   &lt;/div&gt;
 
   ## Groups
-  &lt;div class="col-xs-12 col-md-6"&gt;
-    ; &lt;label #if ($xcontext.action == 'edit')for="Homework.Code.HomeworkClass_0_groups"#end&gt;
+  &lt;div class='col-xs-12 col-md-6'&gt;
+    ; &lt;label #if ($xcontext.action == 'edit')for='Homework.Code.HomeworkClass_0_groups'#end&gt;
       $services.localization.render('homework.groups.label')
     &lt;/label&gt;
     : $doc.display('groups')
   &lt;/div&gt;
 &lt;/div&gt;
 
-&lt;div class="row"&gt;
+&lt;div class='row'&gt;
   ## Course
-  &lt;div class="col-xs-12 col-md-6"&gt;
-    ; &lt;label #if ($xcontext.action == 'edit')for="Homework.Code.HomeworkClass_0_course"#end&gt;
+  &lt;div class='col-xs-12 col-md-6'&gt;
+    ; &lt;label #if ($xcontext.action == 'edit')for='Homework.Code.HomeworkClass_0_course'#end&gt;
       $services.localization.render('homework.course.label')
     &lt;/label&gt;
     : $doc.display('course')
   &lt;/div&gt;
 
   ## Professors
-  &lt;div class="col-xs-12 col-md-6"&gt;
-    ; &lt;label #if ($xcontext.action == 'edit')for="Homework.Code.HomeworkClass_0_professors"#end&gt;
+  &lt;div class='col-xs-12 col-md-6'&gt;
+    ; &lt;label #if ($xcontext.action == 'edit')for='Homework.Code.HomeworkClass_0_professors'#end&gt;
       $services.localization.render('homework.professors.label')
     &lt;/label&gt;
     : $doc.display('professors')
@@ -95,15 +95,34 @@
 &lt;/br&gt;
 &lt;/br&gt;
 #if($context.action == 'view' &amp;&amp; $doc.getParent() != 'Homework.WebHome')
-  #displayUploadFile()
+&lt;div class='row'&gt;
+  &lt;div class='col-xs-12 col-md-6'&gt;
+    ; &lt;label&gt;
+      $services.localization.render('homework.upload.label')
+    &lt;/label&gt;
+    : #displayUploadFile()
+  &lt;/div&gt;
+
+  ## Edit the authors of a homework.
+  &lt;div class='col-xs-12 col-md-6'&gt;
+  #if ($hasUploadObj)
+    ; &lt;label&gt;
+      $services.localization.render('homework.upload.author.label')
+    &lt;/label&gt;
+    : #displaySetAuthors()
+  #end
+  &lt;/div&gt;
+&lt;/div&gt;
 #end
 {{/html}}
 {{/velocity}}
 
 {{velocity}}
 #if($context.action == 'view')
-  #changeLocation()
-  #makePageNested()
+  #if ($isProfessor)
+    #changeLocation()
+    #makePageNested()
+  #end
 
   #set ($columnsProperties = {
     'doc.fullName': {'type': 'text', 'size': 10, 'link': 'view'},

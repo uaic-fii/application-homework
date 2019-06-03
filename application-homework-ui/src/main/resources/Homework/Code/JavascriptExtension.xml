@@ -340,6 +340,18 @@
     </property>
     <property>
       <code>require(['jquery', 'xwiki-meta'], function($, xm) {
+  // Prepare the upload form.
+  var targetInput = $('#file')[0];
+  if (typeof(XWiki.FileUploader) != 'undefined') {
+      new XWiki.FileUploader(targetInput, {
+        autoUpload: false,
+        enableProgressInfo: false,
+        enableFileInfo: false,
+        responseContainer: $('#responseContainer')[0],
+        fileFilter: /application\/xml|text\/xml/i
+      });
+  }
+
   // Get the script page and the upload document name.
   let thisDocRef = xm.documentReference;
   let thisDoc = new XWiki.Document(thisDocRef);
@@ -350,21 +362,30 @@
   let userHwDoc = new XWiki.Document(userHwDocRef);
   let serviceReference = new XWiki.DocumentReference('wiki', ['Homework', 'Code'], 'ScriptService');
   let serviceDoc = new XWiki.Document(serviceReference);
-  let serviceUrl = serviceDoc.getURL('get', 'xpage=plain&amp;outputSyntax=plain&amp;page='+userHwDoc.page+'&amp;space=' + userHwDoc.space);
 
-  // Trigger the script page only on click.
+  // Add rights object on click event.
   $('#file').on('click', function() {
+    let serviceUrl = serviceDoc.getURL('get', 'xpage=plain&amp;outputSyntax=plain&amp;page='+userHwDoc.page+'&amp;space=' + userHwDoc.space);
     $.ajax({
       url : serviceUrl,
       error : function(e) {
-        alert("Error at giving you the rights for upload. Please contact your homework administrator.");
+        alert("$services.localization.render('homework.upload.rights.error')");
       }
     });
-  })
+  });
+
+  // Add upload object after the upload is done.
+  $(document).on('xwiki:html5upload:done', function() {
+    let fileName = targetInput.files[0].name;
+    let serviceUrl = serviceDoc.getURL('get', 'xpage=plain&amp;outputSyntax=plain&amp;page='+userHwDoc.page+'&amp;space=' + userHwDoc.space+'&amp;filename='+fileName);
+    $.ajax({
+      url : serviceUrl
+    });
+  });
 });</code>
     </property>
     <property>
-      <name>createRightsObject</name>
+      <name>eventsOnUpload</name>
     </property>
     <property>
       <parse/>

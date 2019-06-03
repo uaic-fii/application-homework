@@ -38,9 +38,8 @@
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>false</hidden>
+  <hidden>true</hidden>
   <content>{{groovy}}
-  // Gives rights to the student and the homework teacher.
   if (request.page) {
     def uploadDoc = xwiki.getDocument(request.space + '.' + request.page);
     def hwDoc = xwiki.getDocument(request.space+'.WebHome');
@@ -53,6 +52,7 @@
     for (prof in professors) {
       users = users + ',' + prof;
     }
+    // Gives rights to the student and the homework teacher.
     // The request should come only from the student that has the page.
     if (rightsObj == null &amp;&amp; user == request.page) {
       rightsObj = uploadDoc.newObject('XWiki.XWikiRights');
@@ -63,6 +63,23 @@
       uploadDoc.set("allow", 1);
       uploadDoc.document.setAuthor(xcontext.user);
       xwiki.getXWiki().saveDocument(uploadDoc.document, 'Set the rights', xcontext.context);
+    }
+    // Create upload object.
+    def uploadObj = uploadDoc.getObject('Homework.Code.UploadClass');
+    if (uploadObj == null &amp;&amp; user == request.page) {
+      uploadObj = uploadDoc.newObject('Homework.Code.UploadClass');
+      uploadDoc.use('Homework.Code.UploadClass');
+      uploadDoc.set("parent", hwDoc.toString());
+      uploadDoc.set("authors", xcontext.user);
+      uploadDoc.set("lastUploadName", "");
+      uploadDoc.document.setAuthor(xcontext.user);
+      xwiki.getXWiki().saveDocument(uploadDoc.document, 'Upload status', xcontext.context);
+    }
+    if (request.filename) {
+      uploadDoc.use('Homework.Code.UploadClass');
+      uploadDoc.set("lastUploadName", request.filename);
+      uploadDoc.document.setAuthor(xcontext.user);
+      xwiki.getXWiki().saveDocument(uploadDoc.document, 'Upload status', xcontext.context);
     }
   }
 {{/groovy}}</content>
