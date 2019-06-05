@@ -59,7 +59,7 @@
       uploadDoc.use('XWiki.XWikiRights');
       uploadDoc.set("groups", "");
       uploadDoc.set("users", users);
-      uploadDoc.set("levels", "view,comment,edit");
+      uploadDoc.set("levels", "view,comment,edit,delete");
       uploadDoc.set("allow", 1);
       uploadDoc.document.setAuthor(xcontext.user);
       xwiki.getXWiki().saveDocument(uploadDoc.document, 'Set the rights', xcontext.context);

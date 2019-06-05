@@ -59,18 +59,19 @@
   #set ($homeworks = [])
   #checkUser()
   #if ($isStudent)
-    #set ($studGroups = $xwiki.rightsmanager.getAllGroupsNamesForMember($xcontext.user))
+    #set ($studGroups = $services.user.group.getGroupsFromAllWikis($xwiki.getDocument($xcontext.user).getDocumentReference()))
     #set ($studentHomeworks = [])
     #foreach ($homework in $allHomeworks)
       #set ($doc = $xwiki.getDocument($homework))
       #set ($obj = $doc.getObject('Homework.Code.HomeworkClass'))
       #set ($courseGroups = $obj.getValue('groups'))
       #foreach ($group in $studGroups)
-        #if ($courseGroups.contains($group))
+        #if ($courseGroups.contains($xwiki.getDocument($group).getName()))
           #set ($discard = $homeworks.add($homework))
         #end
       #end
     #end
+    $homeworks
   #else
     #foreach($homework in $allHomeworks)
       #set($userDoc = $xwiki.getDocument($xcontext.getUser()))
@@ -128,25 +129,6 @@
   &lt;/div&gt;
 #end
 #end
-#macro(displayDownloadAll)
-#if($isProfessor &amp;&amp; $xcontext.action == 'view')
-  &lt;div class="form-group row"&gt;
-    &lt;div class="col-xs-12 col-md-4"&gt;
-      &lt;label&gt;
-        $services.localization.render('homework.download.label')
-      &lt;/label&gt;
-    &lt;/div&gt;
-    &lt;div class="col-xs-12 col-md-4"&gt;
-      &lt;input class="btn btn-primary" type="button" id="download" value="Download all homeworks"/&gt;
-    &lt;/div
-  &lt;/div&gt;
-#end
-#end
-#macro(getCourseName)
-  #set ($object = $doc.getObject('Homework.Code.HomeworkClass'))
-  #set ($course = $object.getValue('course').split('\.')[1])
-  #set ($courseName = $course.split('Description')[0])
-#end
 #macro(changeLocation)
 #if(($doc.getParent() == 'Homework.WebHome'))
   ## Get the parent name.
@@ -163,7 +145,8 @@
   ## Delete redirect page.
   #set ($toDeleteRef = $services.model.createDocumentReference('', 'Homework', $courseName))
   #set ($toDeleteDoc = $services.model.resolveDocument($toDeleteRef))
-  #set ($moveRequest = $services.refactoring.delete($toDeleteDoc).join())
+  #set ($deleteRequest = $services.refactoring.delete($toDeleteDoc))
+  #set ($discard = $deleteRequest.join())
 #end
 #end
 #macro(makePageNested)
@@ -180,7 +163,12 @@
   #end
 #end
 #end
-## Where to upoad the files
+#macro(getCourseName)
+  #set ($object = $doc.getObject('Homework.Code.HomeworkClass'))
+  #set ($course = $object.getValue('course').split('\.')[1])
+  #set ($courseName = $course.split('Description')[0])
+#end
+## Where to upload the files
 #macro(getUploadDoc)
 #getCourseName()
 #set ($hwName = $doc.fullName.split('\.')[2])
@@ -188,6 +176,8 @@
 #set ($uploadDocRef = $services.model.createDocumentReference('', ['Homework', $courseName, $hwName], $uploadDocName))
 #if (!$xwiki.exists($uploadDocRef))
   #set ($uploadDoc = $xwiki.getXWiki().getDocument($uploadDocRef, $xcontext.context))
+  #set ($parentRef = $services.model.createDocumentReference('', ['Homework', $courseName], $hwName))
+  #set ($discard = $uploadDoc.setParent($parentRef))
   #set ($discard = $uploadDoc.setAuthorReference($services.model.createDocumentReference('','XWiki','Admin')))
   #set ($discard = $xwiki.getXWiki().saveDocument($uploadDoc, 'Created upload page', true, $xcontext.context))
 #end
@@ -197,7 +187,6 @@
   #set($hasUploadObj = true)
 #end
 #end
-## Upload form.
 #macro(displayUploadFile)
 #getUploadDoc()
 &lt;form method='post' action="$uploadDoc.getURL('upload')" enctype='multipart/form-data' &gt;
@@ -213,6 +202,19 @@ $uploadDoc.use('Homework.Code.UploadClass')
   &lt;input type='hidden' value="$!{services.csrf.getToken()}" name='form_token'/&gt;
   $uploadDoc.display('authors','edit')
   &lt;input class='button' type='submit' name='formactionsac' value="$services.localization.render('admin.save')" /&gt;
+&lt;/form&gt;
+#end
+#macro(displayUploadFileProf)
+&lt;form method='post' action="$doc.getURL('upload')" enctype='multipart/form-data' &gt;
+  &lt;input type='hidden' value="$!{services.csrf.getToken()}" name='form_token'/&gt;
+  &lt;input type='hidden' value="$doc.getURL('view')" name='xredirect' /&gt;
+  &lt;label&gt;
+    $services.localization.render('homework.attachProfessor.label')
+  &lt;/label&gt;
+  &lt;label class="btn btn-light btn-file"&gt;
+      Choose a file &lt;input type='file' name='filepath' id='profFile' style="display: none;"/&gt;
+  &lt;/label&gt;
+  &lt;input class="btn btn-primary" type="submit" value="Upload" name="upload" id="upload"&gt;
 &lt;/form&gt;
 #end
 {{/velocity}}</content>

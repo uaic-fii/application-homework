@@ -42,8 +42,7 @@
   <content>
 {{velocity}}
 #if ($xcontext.action == 'get' &amp;&amp; "$!{request.outputSyntax}" == 'plain')
-  #set($itemdoc = $xwiki.getDocument($request.page))
-  #set($docRef   = $services.model.createDocumentReference('', 'Homework', $request.page))
+  #set($docRef = $services.model.createDocumentReference('', ['Homework', $request.course], $request.homework))
   $services.homework.downloadAttachments($docRef)
 #end
 {{/velocity}}

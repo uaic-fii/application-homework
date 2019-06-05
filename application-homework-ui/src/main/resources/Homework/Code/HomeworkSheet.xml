@@ -43,8 +43,9 @@
 
 {{velocity}}
 #set ($discard = $xwiki.jsx.use('Homework.Code.JavascriptExtension'))
+#set ($discard = $xwiki.jsfx.use('uicomponents/widgets/upload.js', true))
+#set ($discard = $xwiki.ssfx.use('uicomponents/widgets/upload.css', true))
 #checkUser()
-
 {{html clean='false' wiki='true'}}
 &lt;div class="row"&gt;
   ## Description
@@ -94,31 +95,48 @@
 
 &lt;/br&gt;
 &lt;/br&gt;
-#if($context.action == 'view' &amp;&amp; $doc.getParent() != 'Homework.WebHome')
-&lt;div class='row'&gt;
-  &lt;div class='col-xs-12 col-md-6'&gt;
-    ; &lt;label&gt;
-      $services.localization.render('homework.upload.label')
-    &lt;/label&gt;
-    : #displayUploadFile()
+#if($xcontext.action == 'view' &amp;&amp; $doc.getParent() != 'Homework.WebHome')
+#if ($isStudent)
+  &lt;div class='row'&gt;
+    ## Upload form.
+    &lt;div class='col-xs-12 col-md-6'&gt;
+      ; &lt;label&gt;
+        $services.localization.render('homework.upload.label')
+      &lt;/label&gt;
+      : #displayUploadFile()
+    &lt;/div&gt;
+    ## Edit the authors of a homework.
+    &lt;div class='col-xs-12 col-md-6'&gt;
+      #if ($hasUploadObj)
+        &lt;label&gt;
+          $services.localization.render('homework.upload.author.label')
+        &lt;/label&gt;
+        #displaySetAuthors()
+      #end
+    &lt;/div&gt;
   &lt;/div&gt;
-
-  ## Edit the authors of a homework.
-  &lt;div class='col-xs-12 col-md-6'&gt;
-  #if ($hasUploadObj)
-    ; &lt;label&gt;
-      $services.localization.render('homework.upload.author.label')
-    &lt;/label&gt;
-    : #displaySetAuthors()
-  #end
-  &lt;/div&gt;
-&lt;/div&gt;
 #end
+#if ($isProfessor)
+  &lt;div class='row'&gt;
+      &lt;div class='col-xs-12 col-md-6'&gt;
+        #displayUploadFileProf()
+      &lt;/div&gt;
+      &lt;div class='col-xs-12 col-md-6'&gt;
+        &lt;label&gt;
+          $services.localization.render('homework.download.label')
+        &lt;/label&gt;
+        &lt;input class="btn btn-primary" type="button" id="download" value="Download all homeworks"/&gt;
+      &lt;/div&gt;
+  &lt;/div&gt;
+#end
+#end
+
+
 {{/html}}
 {{/velocity}}
 
 {{velocity}}
-#if($context.action == 'view')
+#if($xcontext.action == 'view')
   #if ($isProfessor)
     #changeLocation()
     #makePageNested()

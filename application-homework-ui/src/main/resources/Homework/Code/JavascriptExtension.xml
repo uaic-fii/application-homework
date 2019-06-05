@@ -125,22 +125,15 @@
     <property>
       <code>require(['jquery', 'xwiki-meta'], function($, xm) {
   $('#download').on('click', function() {
-    let thisDoc = xm.documentReference;
+    let thisDocRef = xm.documentReference;
+    let thisDoc = new XWiki.Document(thisDocRef);
+    let parentSpaces = thisDoc.space.split('.');
 
     let serviceReference = new XWiki.DocumentReference('wiki', ['Homework', 'Code'], 'DownloadService');
     let serviceDoc = new XWiki.Document(serviceReference);
-    let serviceUrl = serviceDoc.getURL('get', 'outputSyntax=plain&amp;page=' + thisDoc.name);
+    let serviceUrl = serviceDoc.getURL('get', 'outputSyntax=plain&amp;course=' + parentSpaces[1] + '&amp;homework=' + parentSpaces[2]);
 
-    $.ajax({
-      url : serviceUrl,
-      success : function(e) {
-        window.location.href = serviceUrl;
-      },
-      error : function(e) {
-        alert("Could not download attachments");
-      }
-    });
-
+    window.location.href = serviceUrl;
   });
 });</code>
     </property>
@@ -342,14 +335,16 @@
       <code>require(['jquery', 'xwiki-meta'], function($, xm) {
   // Prepare the upload form.
   var targetInput = $('#file')[0];
-  if (typeof(XWiki.FileUploader) != 'undefined') {
-      new XWiki.FileUploader(targetInput, {
-        autoUpload: false,
-        enableProgressInfo: false,
-        enableFileInfo: false,
-        responseContainer: $('#responseContainer')[0],
-        fileFilter: /application\/xml|text\/xml/i
-      });
+  if(targetInput) {
+    if (typeof(XWiki.FileUploader) != 'undefined') {
+        new XWiki.FileUploader(targetInput, {
+          autoUpload: true,
+          enableProgressInfo: false,
+          enableFileInfo: false,
+          responseContainer: $('#responseContainer')[0],
+          fileFilter: /application\/xml|text\/xml/i
+        });
+    }
   }
 
   // Get the script page and the upload document name.

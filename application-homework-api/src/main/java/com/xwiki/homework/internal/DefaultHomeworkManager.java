@@ -27,6 +27,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -45,6 +47,7 @@ import com.xpn.xwiki.XWikiException;
 import com.xwiki.homework.HomeworkManager;
 import com.xwiki.homework.internal.helpers.Homework;
 import com.xwiki.homework.internal.helpers.Student;
+import com.xwiki.homework.internal.helpers.UploadDoc;
 
 import org.apache.commons.io.IOUtils;
 
@@ -64,7 +67,8 @@ public class DefaultHomeworkManager implements HomeworkManager
 	private XWiki xwiki;
 	private XWikiDocument homework;
 	public String homeworkAuthor;
-	
+	private UploadDoc uploadDoc;
+
 	public void downloadAllAttachments(DocumentReference homeworkReference) {
 		xwikiContext = xcontext.get();
         xwiki = xwikiContext.getWiki();
@@ -77,28 +81,36 @@ public class DefaultHomeworkManager implements HomeworkManager
         try {
             homework = xwiki.getDocument(homeworkReference, xwikiContext);
 
-            List<XWikiAttachment> attachments = homework.getAttachmentList();
+            List<DocumentReference> childReferences = homework.getChildrenReferences(xwikiContext);
+            List<XWikiAttachment> attachments;
+            XWikiAttachment attachment;
 
-            for(int i=0; i<attachments.size(); i++) {
-                XWikiAttachment attachment = attachments.get(i);
+            for(int i=0; i<childReferences.size(); i++) {
+                XWikiDocument doc = xwiki.getDocument(childReferences.get(i), xwikiContext);
+                uploadDoc = new UploadDoc(xwikiContext, childReferences.get(i));
 
-                // Get the author of the attachment.
-                homeworkAuthor = attachment.getAuthorReference().getName();
-                Student student = new Student(xwikiContext, new DocumentReference(xwikiContext.getWikiId(), "XWiki", homeworkAuthor));
+                attachments = doc.getAttachmentList();
 
-                // Create the entry
-                ZipEntry ze= new ZipEntry(student.getAttachmentName());
-                zos.putNextEntry(ze);
+                for(int j=0; j<attachments.size(); j++) {
+                    attachment = attachments.get(j);
 
-                // Write the content.
-                InputStream inputStream = attachment.getContentInputStream(xwikiContext);
-                int length;
-                while ((length = inputStream.read(buffer)) >= 0) {
-                   zos.write(buffer, 0, length);
-	            }
+                    if(attachment.getFilename().compareTo(uploadDoc.getLastUploadName()) == 0) {
 
-                // Close the entry.
-                zos.closeEntry();
+                        // Create the entry
+                        ZipEntry ze= new ZipEntry(uploadDoc.getAttachmentName());
+                        zos.putNextEntry(ze);
+
+                        // Write the content.
+                        InputStream inputStream = attachment.getContentInputStream(xwikiContext);
+                        int length;
+                        while ((length = inputStream.read(buffer)) >= 0) {
+                           zos.write(buffer, 0, length);
+                        }
+
+                        // Close the entry.
+                        zos.closeEntry();
+                    }
+                }
             }
 
             zos.close();
