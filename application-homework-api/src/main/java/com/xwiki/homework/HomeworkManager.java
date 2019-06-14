@@ -19,6 +19,8 @@
  */
 package com.xwiki.homework;
 
+import java.util.List;
+
 import org.xwiki.component.annotation.Role;
 import org.xwiki.model.reference.DocumentReference;
 
@@ -38,7 +40,7 @@ public interface HomeworkManager
      * @param homeworkReference the homework reference
      * @return void
      */
-    public void downloadAllAttachments(DocumentReference homeworkReference);
+    public void downloadAllAttachments(DocumentReference homeworkReference, String student);
 
     /**
      * Download to browser.
@@ -56,4 +58,19 @@ public interface HomeworkManager
      */
     public Boolean isBeforeDeadline(DocumentReference homeworkReference);
 
+    /**
+     * Export grades.
+     *
+     * @param homeworkReference the homework reference
+     * @return void
+     */
+    public void export(DocumentReference homeworkReference);
+
+    /**
+     * Add mark objects.
+     *
+     * @param homeworkDoc the homework document
+     * @return avoid
+     */
+    public void addMarkObjects(DocumentReference homeworkReference, List<String> members);
 }

@@ -19,8 +19,6 @@
  */
 package com.xwiki.homework.internal.helpers;
 
-import java.util.List;
-
 import org.xwiki.model.reference.DocumentReference;
 
 import com.xpn.xwiki.XWiki;

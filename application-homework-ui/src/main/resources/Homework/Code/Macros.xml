@@ -71,7 +71,6 @@
         #end
       #end
     #end
-    $homeworks
   #else
     #foreach($homework in $allHomeworks)
       #set($userDoc = $xwiki.getDocument($xcontext.getUser()))
@@ -86,10 +85,8 @@
   #end
 #end
 
-## Sets the students to be seen in homework page. Used in livetable.
 #macro(setStudents $allStudents $homework)
-#set ($course = $homework.split('\.')[1])
-#set ($homeworkReference = $services.model.createDocumentReference('', ['Homework', $course], $homework.split('\.')[2]))
+#set ($homeworkReference = $xwiki.getDocument($homework).getDocumentReference())
 #set ($doc = $xwiki.getDocument($homeworkReference))
 #set ($obj = $doc.getObject('Homework.Code.HomeworkClass'))
 #set ($courseGroups = $obj.getValue('groups'))
@@ -216,6 +213,42 @@ $uploadDoc.use('Homework.Code.UploadClass')
   &lt;/label&gt;
   &lt;input class="btn btn-primary" type="submit" value="Upload" name="upload" id="upload"&gt;
 &lt;/form&gt;
+#end
+#macro(editorPopup)
+  &lt;div class='modal fade' tabindex='-1' role='dialog' aria-hidden='true' id='editorPopup'&gt;
+    &lt;div class='modal-dialog modal-sm modal-dialog-centered'&gt;
+      &lt;div class='modal-content'&gt;
+        &lt;div class='modal-header'&gt;
+          &lt;button type='button' class='close' data-dismiss='modal' aria-label='Close'&gt;
+            &lt;span aria-hidden='true'&gt;&amp;times;&lt;/span&gt;
+          &lt;/button&gt;
+          &lt;h4 class='modal-title'&gt;Change the mark&lt;/h4&gt;
+        &lt;/div&gt;
+        &lt;form id='propEditor' method='post' action="$xwiki.getURL($doc, 'saveandcontinue')" class="xform half"&gt;
+          &lt;input type='hidden' value="$!{services.csrf.getToken()}" name='form_token'/&gt;
+          &lt;div type='hidden' id='objNumber'&gt;&lt;/div&gt;
+          &lt;div class='modal-body'&gt;
+            &lt;div id='property'&gt;&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div class='modal-footer'&gt;
+            &lt;input class='button' type='submit' name='formactionsac' value="$services.localization.render('admin.save')" /&gt;
+          &lt;/div&gt;
+        &lt;/form&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+#end
+#macro(addMarks)
+#set ($obj = $doc.getObject('Homework.Code.HomeworkObject'))
+#set ($groups = $doc.getValue("groups").split(','))
+#foreach($group in $groups)
+  #set ($pages = $group.split('\.'))
+  #set ($groupRef = $services.model.createDocumentReference('', $pages[0], $pages[1]))
+  #set ($members = $services.user.group.getMembers($groupRef))
+  $services.homework.addMarkObjects($doc.getDocumentReference(), $members)
+#end
+##$services.homework.addMarkObjects($doc.getDocumentReference())
+##set($allGroupsInAllWikis = $services.user.group.getMembers('xwiki:XWiki.MyGroup'))
 #end
 {{/velocity}}</content>
 </xwikidoc>

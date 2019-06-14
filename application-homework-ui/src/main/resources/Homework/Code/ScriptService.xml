@@ -82,5 +82,14 @@
       xwiki.getXWiki().saveDocument(uploadDoc.document, 'Upload status', xcontext.context);
     }
   }
-{{/groovy}}</content>
+{{/groovy}}
+{{velocity}}
+#if ($request.number)
+  #set ($docRef = $services.model.createDocumentReference('', ['Homework', $request.course, $request.homework], 'WebHome'))
+  #set ($doc = $xwiki.getDocument($docRef))
+  #set ($discard = $doc.use('Homework.Code.MarkClass'))
+  #set ($obj = $doc.getObject('Homework.Code.MarkClass', $request.number))
+  $doc.display('mark','edit',$obj)
+#end
+{{/velocity}}</content>
 </xwikidoc>

@@ -43,10 +43,12 @@
 
 {{velocity}}
 #set ($discard = $xwiki.jsx.use('Homework.Code.JavascriptExtension'))
+#set ($discard = $xwiki.ssx.use('Homework.Code.JavascriptExtension'))
 #set ($discard = $xwiki.jsfx.use('uicomponents/widgets/upload.js', true))
 #set ($discard = $xwiki.ssfx.use('uicomponents/widgets/upload.css', true))
 #checkUser()
 {{html clean='false' wiki='true'}}
+#editorPopup()
 &lt;div class="row"&gt;
   ## Description
   &lt;div class='col-xs-12'&gt;
@@ -81,7 +83,15 @@
     ; &lt;label #if ($xcontext.action == 'edit')for='Homework.Code.HomeworkClass_0_course'#end&gt;
       $services.localization.render('homework.course.label')
     &lt;/label&gt;
-    : $doc.display('course')
+    #if ($xcontext.action == 'edit')
+      : $doc.display('course')
+    #else
+      #set ($obj = $doc.getObject('Homework.Code.HomeworkClass'))
+      #set ($value = $obj.getValue('course'))
+      #set ($courseDoc = $xwiki.getDocument($value))
+      #set ($courseObj = $courseDoc.getObject('Structure.Code.CourseClass'))
+      : [[$courseObj.getValue('CourseName')&gt;&gt;$value]]
+    #end
   &lt;/div&gt;
 
   ## Professors
@@ -123,7 +133,7 @@
       &lt;/div&gt;
       &lt;div class='col-xs-12 col-md-6'&gt;
         &lt;label&gt;
-          $services.localization.render('homework.download.label')
+          $services.localization.render('homework.download.zip.label')
         &lt;/label&gt;
         &lt;input class="btn btn-primary" type="button" id="download" value="Download all homeworks"/&gt;
       &lt;/div&gt;
@@ -140,24 +150,25 @@
   #if ($isProfessor)
     #changeLocation()
     #makePageNested()
+    #addMarks()
   #end
 
   #set ($columnsProperties = {
-    'doc.fullName': {'type': 'text', 'size': 10, 'link': 'view'},
+    'student': {'type': 'text', 'size': 10},
     'group': {'type': 'text', 'html': 'true'},
-    'series': {'type': 'text', 'html': 'true'},
-    '_actions': {'html': true, 'sortable': false, 'actions': ['edit', 'delete']}
+    'mark': {'type': 'text', 'html': 'true', 'link':'editor'}
   })
 
   ## URL for options
   #set ($queryString = $escapetool.url({
     'xpage': 'plain',
     'outputSyntax': 'plain',
-    'classname': 'Structure.Code.StudentClass',
-    'collist': 'doc.fullName,group,series,_actions',
+    'classname': 'Homework.Code.MarkClass',
+    'collist': 'student,group,mark,download',
     'rowCount': 15,
+    'tagCloud': true,
     'maxPages': 10,
-    'selectedColumn': 'doc.fullName',
+    'selectedColumn': 'student',
     'defaultOrder': 'desc',
     'homeworkDoc': $doc
   }))
@@ -166,8 +177,19 @@
   #set ($options = {
     'url' : $livetabelURL
   })
-  #set ($columns = ['doc.fullName', 'group', 'series', '_actions'])
+  #set ($columns = ['student', 'group', 'mark', 'download'])
   #livetable('students' $columns $columnsProperties $options)
+
+  {{html}}
+  &lt;div class='row'&gt;
+      &lt;div class='col-xs-12 col-md-6'&gt;
+        &lt;button class="btn btn-primary" type="button" id="downloadExcel"&gt;
+          &lt;span&gt;$services.localization.render('homework.download.excel.label')&lt;/span&gt;
+          &lt;span class="exporter-excel"&gt;&lt;/span&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+  &lt;/div&gt;
+  {{/html}}
 #end
 {{/velocity}}</content>
 </xwikidoc>

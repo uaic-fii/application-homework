@@ -47,7 +47,8 @@ homework.professors.label=Professors
 
 homework.attachStudent.label=Upload the homework:
 homework.attachProfessor.label=Upload homework document:
-homework.download.label=Get the zip file of all homeworks:
+homework.download.zip.label=Get the zip file of all homeworks:
+homework.download.excel.label=Export marks:
 homework.upload.author.label=Select the authors of the homework:
 homework.upload.label=Select the homework file:
 homework.upload.rights.error=Error at giving you the rights for upload. Please contact your teacher.</content>

@@ -21,10 +21,16 @@ package com.xwiki.homework.internal.helpers;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.LocalDocumentReference;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -39,27 +45,65 @@ import com.xpn.xwiki.objects.BaseObject;
  * @since 1.0
  */
 public class Homework
-{
+{	
 	private DocumentReference docRef;
 	private XWikiContext xwikiContext;
 	
 	private XWikiDocument homeworkDoc;
 	private BaseObject homeworkObj;
 	private Calendar deadline;
+	private String groups;
+	public static final LocalDocumentReference MARK =
+	        new LocalDocumentReference(Arrays.asList("Homework","Code"),"MarkClass");
+	public static final LocalDocumentReference HOMEWORK =
+	        new LocalDocumentReference(Arrays.asList("Homework","Code"),"HomeworkClass");
+	
 	
 	public Homework(XWikiContext xwikiContext, DocumentReference docRef) {		
 		this.docRef=docRef;
 		this.xwikiContext=xwikiContext;
+		this.setGroups();
 	}
 	
-	@SuppressWarnings("deprecation")
+	public Map<String, Object[]>  setExcelData() {
+		Student student;
+		XWiki xwiki = xwikiContext.getWiki();
+		Map<String, Object[]> data = new TreeMap<String, Object[]>();
+		data.put("1", new Object[]{ "Student", "Group", "Mark" });
+		
+		try {
+			homeworkDoc = xwiki.getDocument(docRef, xwikiContext);
+			
+			List<BaseObject> markObjects = homeworkDoc.getXObjects(MARK);
+			if (markObjects != null) {
+	            for (BaseObject object : markObjects) {
+	                if (object == null) {
+	                    continue;
+	                }
+	                String studentL = object.getStringValue("student");
+	                student = new Student(xwikiContext,
+                            new DocumentReference(xwikiContext.getWikiId(), "XWiki", studentL));
+	                String group = object.getStringValue("group");
+					String mark = object.getStringValue("mark");
+					data.put(String.valueOf(object.getNumber()+2),
+							new Object[]{ student.getFullName(), group, mark });
+	            }
+			}
+			
+		
+		} catch (XWikiException e) {
+			e.printStackTrace();
+		}
+		return data;
+	}
+	
 	public void setDeadline() {
 		XWiki xwiki = xwikiContext.getWiki();
 		String deadlineString;
 		
 		try {
 			homeworkDoc = xwiki.getDocument(docRef, xwikiContext);
-			homeworkObj = homeworkDoc.getObject("Homework.Code.HomeworkClass", 0);
+			homeworkObj = homeworkDoc.getXObject(HOMEWORK, 0);
 			deadlineString = homeworkObj.getStringValue("deadline");
 			
 			SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
@@ -73,6 +117,22 @@ public class Homework
 		}
 	}
 	
+	public void setGroups() {
+		XWiki xwiki = xwikiContext.getWiki();
+		
+		try {
+			homeworkDoc = xwiki.getDocument(docRef, xwikiContext);
+			homeworkObj = homeworkDoc.getXObject(HOMEWORK, 0);
+			this.groups = homeworkObj.getStringValue("groups");	
+		} catch (XWikiException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public String getGroups() {
+		return this.groups;
+	}
+	
 	public Boolean isBeforeDeadline() {
 		setDeadline();
 		Calendar today = Calendar.getInstance();
@@ -84,6 +144,56 @@ public class Homework
 		return false;
 	}
 	
+	public String getName() {
+		String name = docRef.getParent().getName();
+		return name;
+	}
 	
-	
+	public void addMarks(List<String> members) {
+		XWiki xwiki = xwikiContext.getWiki();
+		BaseObject markObj;
+		Student student;
+		int count;
+		try {
+			homeworkDoc = xwiki.getDocument(docRef, xwikiContext);
+			List<BaseObject> markObjects = homeworkDoc.getXObjects(MARK);
+
+			List<String> studentsMarks = new ArrayList<String>();
+            if (markObjects != null) {
+	            for (BaseObject object : markObjects) {
+	                if (object == null) {
+	                    continue;
+	                }
+	                studentsMarks.add("XWiki." + object.getStringValue("student"));
+	            }
+			}
+			
+			markObj = homeworkDoc.getXObject(MARK, false, xwikiContext);
+			if(markObj == null) {
+				markObj = homeworkDoc.getXObject(MARK, true, xwikiContext);
+				count = 0;
+			} else {
+				count = homeworkDoc.getXObjectSize(MARK);
+			}
+
+			for(String member : members) {
+				if(!studentsMarks.contains(member)) {
+					markObj = homeworkDoc.getXObject(MARK, count, true, xwikiContext);
+					markObj.setNumber(count);
+					student = new Student(xwikiContext,
+                            new DocumentReference(xwikiContext.getWikiId(), "XWiki", member.split("\\.")[1]));
+					if(student.isStudent()) {
+						markObj.set("student", student.getUsername(), xwikiContext);
+						markObj.set("group", student.getGroup(), xwikiContext);
+						markObj.set("mark", "0.0", xwikiContext);
+						count++;
+						studentsMarks.add(member);
+						xwiki.saveDocument(homeworkDoc, xwikiContext);
+					}
+				}
+			}
+		} catch (XWikiException e) {
+			e.printStackTrace();
+		}
+	}
 }

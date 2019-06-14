@@ -56,8 +56,9 @@ public class Student
     		studentDoc = xwiki.getDocument(document, xwikiContext);
     		studentObj = studentDoc.getObject("Structure.Code.StudentClass", 0);
     		userObj = studentDoc.getObject("XWiki.XWikiUsers", 0);
-    		this.setInformations();
-	    	
+            if(studentObj != null) {
+                this.setInformations();
+            }
     	} catch (XWikiException e) {
     		e.printStackTrace();
     	}
@@ -97,10 +98,23 @@ public class Student
 		return lastName;
 	}
 	
+	public String getFullName() {
+		return firstName + ' ' + lastName;
+	}
+	
+	public String getUsername() {
+		return firstName + lastName;
+	}
+	
 	public String getAttachmentName() {
 		String atachName = this.lastName+this.firstName+'_'+this.group;
 		return atachName;
 	}
 	
+	public Boolean isStudent() {
+		if(studentObj == null)
+			return false;
+		return true;
+	}
 	
 }

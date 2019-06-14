@@ -19,6 +19,8 @@
  */
 package com.xwiki.homework.script;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -45,11 +47,12 @@ public class HomeworkScriptService implements ScriptService
      * Downloads attachments of a page.
      *
      * @param homeworkDoc the homework document
+     * @param student the student
      * @return avoid
      */
-    public void downloadAttachments(DocumentReference homeworkReference)
+    public void downloadAttachments(DocumentReference homeworkReference, String student)
     {
-       homeworkManager.downloadAllAttachments(homeworkReference);
+       homeworkManager.downloadAllAttachments(homeworkReference, student);
     }
 
     /**
@@ -61,5 +64,27 @@ public class HomeworkScriptService implements ScriptService
     public Boolean canUploadHomework(DocumentReference homeworkReference)
     {
        return homeworkManager.isBeforeDeadline(homeworkReference);
+    }
+
+    /**
+     * Exports.
+     *
+     * @param homeworkDoc the homework document
+     * @return avoid
+     */
+    public void export(DocumentReference homeworkReference)
+    {
+       homeworkManager.export(homeworkReference);
+    }
+
+    /**
+     * Add mark objects.
+     *
+     * @param homeworkDoc the homework document
+     * @return avoid
+     */
+    public void addMarkObjects(DocumentReference homeworkReference, List<String> members)
+    {
+       homeworkManager.addMarkObjects(homeworkReference, members);
     }
 }

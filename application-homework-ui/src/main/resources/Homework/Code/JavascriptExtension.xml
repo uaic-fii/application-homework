@@ -124,17 +124,40 @@
     </property>
     <property>
       <code>require(['jquery', 'xwiki-meta'], function($, xm) {
-  $('#download').on('click', function() {
-    let thisDocRef = xm.documentReference;
-    let thisDoc = new XWiki.Document(thisDocRef);
-    let parentSpaces = thisDoc.space.split('.');
+  let thisDocRef = xm.documentReference;
+  let thisDoc = new XWiki.Document(thisDocRef);
+  let parentSpaces = thisDoc.space.split('.');
 
-    let serviceReference = new XWiki.DocumentReference('wiki', ['Homework', 'Code'], 'DownloadService');
-    let serviceDoc = new XWiki.Document(serviceReference);
-    let serviceUrl = serviceDoc.getURL('get', 'outputSyntax=plain&amp;course=' + parentSpaces[1] + '&amp;homework=' + parentSpaces[2]);
+  let serviceReference = new XWiki.DocumentReference('wiki', ['Homework', 'Code'], 'DownloadService');
+  let serviceDoc = new XWiki.Document(serviceReference);
+
+  $('#download').on('click', function() {
+    let serviceUrl = serviceDoc.getURL('get', 'outputSyntax=plain&amp;course=' + parentSpaces[1] +
+                                       '&amp;homework=' + parentSpaces[2] + '&amp;download=zip');
 
     window.location.href = serviceUrl;
   });
+
+  $('#downloadExcel').on('click', function() {
+    let serviceUrl = serviceDoc.getURL('get', 'outputSyntax=plain&amp;course=' + parentSpaces[1] +
+                                       '&amp;homework=' + parentSpaces[2] + '&amp;download=excel');
+
+    window.location.href = serviceUrl;
+  });
+
+  // Download one file.
+  $(window).on("load", function(event) {
+    let file = $('.download');
+    for (let i = 0; i &lt; file.length; i++) {
+      file[i].on('click', function() {
+        let student = $(this).siblings('.student').html();
+        let serviceUrl = serviceDoc.getURL('get', 'outputSyntax=plain&amp;course=' + parentSpaces[1] +
+                                       '&amp;homework=' + parentSpaces[2] + '&amp;download=single' + '&amp;student=' + student);
+        window.location.href = serviceUrl;
+      });
+    }
+  });
+
 });</code>
     </property>
     <property>
@@ -338,8 +361,8 @@
   if(targetInput) {
     if (typeof(XWiki.FileUploader) != 'undefined') {
         new XWiki.FileUploader(targetInput, {
-          autoUpload: true,
-          enableProgressInfo: false,
+          autoUpload: false,
+          enableProgressInfo: true,
           enableFileInfo: false,
           responseContainer: $('#responseContainer')[0],
           fileFilter: /application\/xml|text\/xml/i
@@ -384,6 +407,263 @@
     </property>
     <property>
       <parse/>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>Homework.Code.JavascriptExtension</name>
+    <number>3</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>c4071393-578b-474c-a6f0-0eda426b9c12</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <defaultValue>long</defaultValue>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <contenttype>PureText</contenttype>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>require(['jquery', 'xwiki-meta'], function($, xm) {
+  // Save to know which object was requested.
+  document.observe("xwiki:livetable:loadingComplete", function(event) {
+    let marks = $('.mark');
+    for (let i = 0; i &lt; marks.length; i++) {
+      marks[i].on('click', function() {
+        $('#objNumber').attr('value', $(this).parent('tr').attr('data-index'));
+      });
+    }
+  });
+});
+
+// Override the default editProperty so it would take into consideration the number of the object.
+// Use jquery inside since it's called from prototype.
+var editProperty = function(fullname, classname, fieldname, cb) {
+require(['jquery', 'xwiki-meta'], function($, xm) {
+  let serviceReference = new XWiki.DocumentReference('wiki', ['Homework', 'Code'], 'ScriptService');
+  let serviceDoc = new XWiki.Document(serviceReference);
+  let thisDocRef = xm.documentReference;
+  let thisDoc = new XWiki.Document(thisDocRef);
+  let parentSpaces = thisDoc.space.split('.');
+  let objNumber = $('#objNumber').attr('value') - 1;
+  let serviceUrl = serviceDoc.getURL('view', 'xpage=plain&amp;course=' + parentSpaces[1] + '&amp;homework=' +
+                                     parentSpaces[2] + '&amp;number=' + objNumber);
+
+  $.ajax({
+    url : serviceUrl,
+    success: function(e) {
+      $('#editorPopup').modal('show');
+      $('#editorPopup').on('shown.bs.modal', function (event) {
+        $('#property').html(e);
+        let id = 'Homework.Code.MarkClass_number_mark'.replace('number', objNumber);
+        $('.markInput').attr('id', id);
+        $('.markInput').attr('name', id);
+      })
+    },
+    error : function(e) {
+      console.log("$services.localization.render('homework.upload.rights.error')");
+    }
+  });
+});
+}</code>
+    </property>
+    <property>
+      <name>editProperty</name>
+    </property>
+    <property>
+      <parse/>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>Homework.Code.JavascriptExtension</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>4b920985-2ac4-4246-8e33-32b932a4b232</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <defaultValue>long</defaultValue>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <contenttype>PureText</contenttype>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>.exporter-excel {
+  background-image: url($xwiki.getSkinFile('icons/silk/page_white_excel.png'));
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  vertical-align: text-bottom;
+  margin-left: 0.3em;
+}</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
+      <name>excel</name>
+    </property>
+    <property>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>

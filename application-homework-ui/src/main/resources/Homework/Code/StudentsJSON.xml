@@ -42,33 +42,192 @@
   <content>{{include reference="XWiki.LiveTableResultsMacros" /}}
 {{include reference="Homework.Code.Macros"/}}
 
-{{velocity wiki="false"}}
-#if ($xcontext.action == 'get' &amp;&amp; "$!{request.outputSyntax}" == 'plain')
-  #set ($allStudents = $services.query.xwql("from doc.object(Structure.Code.StudentClass) as student order by doc.fullName asc").execute())
-  #set ($homework = $request.homeworkDoc)
-  #setStudents($allStudents $homework)
-  $response.setContentType('application/json')
-  #set ($map = {})
-  #set ($new_map = {})
-  #gridresult_buildJSON("$!request.classname" $request.collist.split(',') $map)
-  #set ($size = $students.size())
-  #set ($discard = $new_map.put('reqNo', $map.get('reqNo')))
-  #set ($discard = $new_map.put('matchingtags', $map.get('matchingtags')))
-  #set ($discard = $new_map.put('tags', $map.get('tags')))
-  #set ($discard = $new_map.put('offset', $map.get('offset')))
-  #set ($discard = $new_map.put('totalrows', $size))
-  #set ($discard = $new_map.put('returnedrows', $size))
-  #set ($rows = [])
-  #foreach ($row in $map.get('rows'))
-    #if ($row.get('doc_viewable') == true)
-      #set ($fullName = $row.get('doc_fullName'))
-      #if ($students.contains($fullName))
-        #set ($discard = $rows.add($row))
+{{velocity}}
+  #macro(student $doc $count)
+    #set ($markObj = $doc.getObject('Homework.Code.MarkClass', $count))
+    #set ($student = $markObj.getValue('student'))
+    #set ($discard = $row.put('student', $student))
+  #end
+  #macro(mark $doc $count)
+    #set ($markObj = $doc.getObject('Homework.Code.MarkClass', $count))
+    #set ($mark = $markObj.getValue('mark'))
+    #set ($discard = $row.put('mark', $mark))
+  #end
+  #macro(group $doc $count)
+    #set ($markObj = $doc.getObject('Homework.Code.MarkClass', $count))
+    #set ($group = $markObj.getValue('group'))
+    #set ($discard = $row.put('group', $group))
+  #end
+  #**
+   * Adds information about each live table row to the JSON returned by a live table data call.
+   * NOTE: This macro uses Velocity variables defined by gridresultwithfilter_buildQuery.
+   *
+   * @param $map stores the JSON in memory so that it can be adjusted before serialization
+   *#
+  #macro(gridresult_buildRowsJSON $map)
+    #set($offset = $mathtool.toInteger($request.get('offset')))
+    ## Offset starts from 0 in velocity and 1 in javascript
+    #set($offset = $offset - 1)
+    #if(!$offset || $offset &lt; 0)
+      #set($offset = 0)
+    #end
+    #set($limit = $mathtool.toInteger($request.get('limit')))
+    #if(!$limit)
+      #set ($limit = 15)
+    #end
+    #set($query = $services.query.hql($sql))
+    ## Apply query filters if defined. Otherwise use default.
+    #foreach ($queryFilter in $stringtool.split($!request.queryFilters, ', '))
+      #set ($query = $query.addFilter($queryFilter))
+    #end
+    #set ($query = $query.setLimit($limit).setOffset($offset).bindValues($sqlParams))
+    #set($items = $query.execute())
+    #set($discard = $map.put('totalrows', $query.count()))
+    #set($discard = $map.put('returnedrows', $mathtool.min($items.size(), $limit)))
+    #set($discard = $map.put('offset', $mathtool.add($offset, 1)))
+    #set($rows = [])
+    #set($count = 0)
+    #foreach($item in $items)
+      #if($item.size())
+        ## Extract doc name and doc language from $item
+        #set($docName = $item[0])
+      #else
+        #set($docName = $item)
+      #end
+      #set ($docReference = $services.model.resolveDocument($docName))
+      #set ($itemDoc = $xwiki.getDocument($docReference))
+      #if($services.model.serialize($docReference, 'local') == $request.homeworkDoc)
+        #gridresult_buildRowJSON($item $rows $count)
+        #set($count = $count + 1)
       #end
     #end
+    #set($discard = $map.put('rows', $rows))
   #end
-  #set ($discard = $new_map.put('rows', $rows))
-  $jsontool.serialize($new_map)
+  #macro(gridresult_buildRowJSON $item $rows $count)
+    ## Handle both the case where the "language" filter is used and thus languages are returned too and the case where
+    ## only the document name is returned. When more than the document name is returned the $item variable is a list.
+    #if($item.size())
+      ## Extract doc name and doc language from $item
+      #set($docName = $item[0])
+      #set($docLanguage = $item[1])
+    #else
+      #set($docName = $item)
+      #set($docLanguage = '')
+    #end
+    #set ($docReference = $services.model.resolveDocument($docName))
+    #set ($row = {
+      'doc_viewable': $services.security.authorization.hasAccess('view', $docReference),
+      'doc_fullName': $services.model.serialize($docReference, 'local'),
+      'doc_space': $services.model.serialize($docReference.parent, 'local'),
+      'doc_location': "#hierarchy($docReference, {'limit': 5, 'plain': false, 'local': true, 'displayTitle': false})",
+      'doc_url': $xwiki.getURL($docReference),
+      'doc_space_url': $xwiki.getURL($docReference.parent),
+      'doc_wiki': $docReference.wikiReference.name,
+      'doc_wiki_url': $xwiki.getURL($docReference.wikiReference),
+      'doc_hasadmin': $xwiki.hasAdminRights(),
+      'doc_hasedit': $services.security.authorization.hasAccess('edit', $docReference),
+      'doc_hasdelete': $services.security.authorization.hasAccess('delete', $docReference),
+      'doc_edit_url': $xwiki.getURL($docReference, 'edit'),
+      'doc_copy_url': $xwiki.getURL($docReference, 'view', 'xpage=copy'),
+      'doc_delete_url': $xwiki.getURL($docReference, 'delete'),
+      'doc_rename_url': $xwiki.getURL($docReference, 'view', 'xpage=rename&amp;step=1')
+    })
+    #set ($isTranslation = "$!docLanguage" != '' &amp;&amp; $xwiki.getLanguagePreference() != $docLanguage)
+    ## Display the language after the document name so that not all translated documents have the same name displayed.
+    #set ($row.doc_name = "$docReference.name#if ($isTranslation) ($docLanguage)#end")
+    #set ($row.doc_hascopy = $row.doc_viewable)
+    #set ($row.doc_hasrename = $row.doc_hasdelete)
+    #set ($row.doc_hasrights = $row.doc_hasedit &amp;&amp; $isAdvancedUser)
+    #if ($docReference.name == 'WebHome')
+      ## For nested pages, use the page administration.
+      #set ($webPreferencesReference = $services.model.createDocumentReference('WebPreferences', $docReference.lastSpaceReference))
+      #set ($row.doc_rights_url = $xwiki.getURL($webPreferencesReference, 'admin', 'editor=spaceadmin&amp;section=PageRights'))
+    #else
+      ## For terminal pages, use the old rights editor.
+      ## TODO: We should create a page administration for terminal pages too.
+      #set ($row.doc_rights_url = $xwiki.getURL($docReference, 'edit', 'editor=rights'))
+    #end
+    #set($rowDoc = $xwiki.getDocument($row.get('doc_fullName')))
+    #if ($row.doc_viewable)
+      #set ($itemDoc = $xwiki.getDocument($docReference))
+      ## Handle translations. We need to make sure we display the data associated to the correct document if the returned
+      ## result is a translation.
+      #if ($isTranslation)
+        #set ($translatedDoc = $itemDoc.getTranslatedDocument($docLanguage))
+      #else
+        #set ($translatedDoc = $itemDoc.translatedDocument)
+      #end
+      #set($discard = $itemDoc.use($className))
+      #set($discard = $row.put('doc_edit_url', $itemDoc.getURL($itemDoc.defaultEditMode)))
+      #set($discard = $row.put('doc_author_url', $xwiki.getURL($translatedDoc.author)))
+      #set($discard = $row.put('doc_date', $xwiki.formatDate($translatedDoc.date)))
+      #set($discard = $row.put('doc_title', $translatedDoc.plainTitle))
+      #set($rawTitle = $translatedDoc.title)
+      #if($rawTitle != $row['doc_title'])
+        #set($discard = $row.put('doc_title_raw', $rawTitle))
+      #end
+      #set($discard = $row.put('doc_author', $xwiki.getPlainUserName($translatedDoc.authorReference)))
+      #set($discard = $row.put('doc_creationDate', $xwiki.formatDate($translatedDoc.creationDate)))
+      #set($discard = $row.put('doc_creator', $xwiki.getPlainUserName($translatedDoc.creatorReference)))
+      #foreach($colname in $collist)
+        #gridresult_buildColumnJSON($colname $row $count)
+      #end
+      #set($discard = $rows.add($row))
+    #end
+  #end
+  #**
+   * Adds information about the given column to the JSON returned by a live table data call.
+   * NOTE: This macro uses Velocity variables available in gridresult_buildRowJSON.
+   *
+   * @param $colname the name of the live table column for which to retrieve information
+   * @param $row stores the JSON in memory so that it can be adjusted before serialization
+   *#
+  #macro(gridresult_buildColumnJSON $colname $row $count)
+    #if($colname.startsWith('doc.'))
+    #elseif($colname == '_action')
+      #set($discard = $row.put($colname, $services.localization.render("${request.transprefix}actiontext")))
+    #elseif($colname == '_attachments')
+      #livetable_getAttachmentsList($translatedDoc)
+      #set($discard = $row.put($colname, $attachlist))
+    #elseif($colname == 'mark')
+      #set($discard = $itemDoc.use($className, $count))
+      #set ($mark = $itemDoc.getValue('mark'))
+      #set ($discard = $row.put('mark', $mark))
+    #elseif($colname == 'student')
+      #set($discard = $itemDoc.use($className, $count))
+      #set ($student = $itemDoc.getValue('student'))
+      #set ($discard = $row.put('student', $student))
+    #elseif($colname == 'group')
+      #set($discard = $itemDoc.use($className, $count))
+      #set ($group = $itemDoc.getValue('group'))
+      #set ($discard = $row.put('group', $group))
+    #elseif($colname == 'download')
+      #set ($discard = $row.put('download'))
+    #else
+      #set ($discard = $row.put('number', $count))
+    #end
+  #end
+{{/velocity}}
+
+{{velocity wiki="false"}}
+#set ($extra = '')
+#set ($params = [])
+#if ("$!request.space" != '')
+  #set ($extra = "${extra} AND doc.space = ?")
+  #set ($discard = $params.add($request.space))
 #end
+#addLivetableLocationFilter($extra, $params, $!request.location)
+#if ("$!request.parent" != '')
+  #set ($extra = "${extra} and doc.parent = ?")
+  #set ($discard = $params.add($request.parent))
+#end
+#if ("$!request.orphaned" == '1')
+  #set ($homepage = $services.wiki.getById($services.wiki.currentWikiId).mainPageReference)
+  #set ($homepageFullName = $services.model.serialize($homepage, 'local'))
+  ## On Oracle the empty parent is actually null.
+  #set ($extra = "${extra} and (doc.parent = '' or doc.parent is null) and doc.fullName &amp;lt;&amp;gt; ?")
+  #set ($discard = $params.add($homepageFullName))
+#end
+#gridresultwithfilter("$!request.classname" $request.collist.split(',') '' "${extra}" $params)
 {{/velocity}}</content>
 </xwikidoc>
