@@ -19,7 +19,10 @@
  */
 package com.xwiki.homework.internal.helpers;
 
+import java.util.Arrays;
+
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.LocalDocumentReference;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -42,20 +45,24 @@ public class Student
 	private String lastName;
 	private String group;
 	
+	public static final LocalDocumentReference STUDENT =
+	        new LocalDocumentReference(Arrays.asList("Structure","Code"),"StudentClass");
+	public static final LocalDocumentReference USER =
+	        new LocalDocumentReference("XWiki","XWikiUsers");
+	
 	Student(String firstName, String lastName, String group) {
 		this.firstName=firstName;
 		this.lastName=lastName;
 		this.group=group;
 	}
 	
-	@SuppressWarnings("deprecation")
 	public Student(XWikiContext xwikiContext, DocumentReference document) {
     	try {
         	XWiki xwiki = xwikiContext.getWiki();
     		
     		studentDoc = xwiki.getDocument(document, xwikiContext);
-    		studentObj = studentDoc.getObject("Structure.Code.StudentClass", 0);
-    		userObj = studentDoc.getObject("XWiki.XWikiUsers", 0);
+            studentObj = studentDoc.getXObject(STUDENT, 0);
+            userObj = studentDoc.getXObject(USER, 0);
             if(studentObj != null) {
                 this.setInformations();
             }

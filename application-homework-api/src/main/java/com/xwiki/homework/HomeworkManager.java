@@ -73,4 +73,29 @@ public interface HomeworkManager
      * @return avoid
      */
     public void addMarkObjects(DocumentReference homeworkReference, List<String> members);
+
+    /**
+     * Get uploadDoc name.
+     *
+     * @param homeworkDoc the homework document
+     * @param student the current user
+     * @return DocumentReference
+     */
+    public DocumentReference getUploadDocName(DocumentReference homeworkReference, String student);
+
+    /**
+     * Creates a document.
+     *
+     * @param docReference the doc reference
+     * @return avoid
+     */
+    public void createDocument(DocumentReference docReference, DocumentReference userReference);
+
+    /**
+     * Updates rights object of an uploadDoc if the authors have been changes.
+     *
+     * @param docReference the uploadDoc reference
+     * @return avoid
+     */
+    public void updateRights(DocumentReference docReference);
 }

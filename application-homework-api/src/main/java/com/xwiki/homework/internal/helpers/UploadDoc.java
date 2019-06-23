@@ -19,7 +19,11 @@
  */
 package com.xwiki.homework.internal.helpers;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.LocalDocumentReference;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -41,21 +45,25 @@ public class UploadDoc
 	private XWikiDocument uploadDoc;
 	private BaseObject uploadObj;
 	private String lastUploadName;
-	private String authors;
+	private List<String> authors;
 	private String attachmentName;
+	
+	public static final LocalDocumentReference UPLOAD =
+	        new LocalDocumentReference(Arrays.asList("Homework","Code"),"UploadClass");
+	public static final LocalDocumentReference RIGHTS =
+	        new LocalDocumentReference("XWiki","XWikiRights");
 
 	public UploadDoc(XWikiContext xwikiContext, DocumentReference docRef) {		
 		this.docRef=docRef;
 		this.xwikiContext=xwikiContext;
 	}
 
-	@SuppressWarnings("deprecation")
 	public void setLastUploadName() {
 		XWiki xwiki = xwikiContext.getWiki();
 
 		try {
 			uploadDoc = xwiki.getDocument(docRef, xwikiContext);
-			uploadObj = uploadDoc.getObject("Homework.Code.UploadClass", 0);
+			uploadObj = uploadDoc.getXObject(UPLOAD, 0);
 			this.lastUploadName = uploadObj.getStringValue("lastUploadName");
 		} catch (XWikiException e) {
 			e.printStackTrace();
@@ -66,20 +74,35 @@ public class UploadDoc
 		setLastUploadName();
 		return this.lastUploadName;
 	}
+	
+	public void setAuthors() {
+		XWiki xwiki = xwikiContext.getWiki();
 
-	@SuppressWarnings("deprecation")
+		try {
+			uploadDoc = xwiki.getDocument(docRef, xwikiContext);
+			uploadObj = uploadDoc.getXObject(UPLOAD, 0);
+			this.authors = Arrays.asList(uploadObj.getStringValue("authors").split(","));
+		} catch (XWikiException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public List<String> getAuthors() {
+		this.setAuthors();
+		return this.authors;
+	}
+
 	public void setAttachmentName() {
 		XWiki xwiki = xwikiContext.getWiki();
 		Student student;
 
 		try {
 			uploadDoc = xwiki.getDocument(docRef, xwikiContext);
-			uploadObj = uploadDoc.getObject("Homework.Code.UploadClass", 0);
-			this.authors = uploadObj.getStringValue("authors");
-			String[] listAuthors = authors.split(",");
+			uploadObj = uploadDoc.getXObject(UPLOAD, 0);
+			this.authors = Arrays.asList(uploadObj.getStringValue("authors").split(","));
 			this.attachmentName = "";
 
-			for(String author : listAuthors) {
+			for(String author : this.authors) {
 				String authorName = author.split("\\.")[1];
 				student = new Student(xwikiContext, new DocumentReference(xwikiContext.getWikiId(), "XWiki", authorName));
 				this.attachmentName = attachmentName + student.getAttachmentName() + '-';
@@ -95,4 +118,51 @@ public class UploadDoc
 		return this.attachmentName;
 	}
 
+	public Boolean hasObject(LocalDocumentReference OBJECT) {
+		XWiki xwiki = xwikiContext.getWiki();
+
+		try {
+			uploadDoc = xwiki.getDocument(docRef, xwikiContext);
+			uploadObj = uploadDoc.getXObject(OBJECT, 0);
+			if(uploadObj != null) {
+				return true;
+			}
+		} catch (XWikiException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public void updateRights() {
+		XWiki xwiki = xwikiContext.getWiki();
+		BaseObject rightsObject;
+
+		try {
+			uploadDoc = xwiki.getDocument(docRef, xwikiContext);
+			if(this.hasObject(RIGHTS) && this.hasObject(UPLOAD)) {
+				rightsObject = uploadDoc.getXObject(RIGHTS, 0);
+				String users = rightsObject.getStringValue("users");
+
+				this.setAuthors();
+				List<String> usersList = Arrays.asList(users.split(","));
+
+				for(String author : authors) {
+					if(!usersList.contains(author)) {
+						rightsObject.set("users", users + "," + author, xwikiContext);
+					}
+				}
+
+//				TODO: when a user is deleted from author remove his rights?
+//				for(String user : usersList) {
+//					if(!authors.contains(user)) {
+//						usersList.remove(user);
+//						rightsObject.set("users", usersList.toString(), xwikiContext);
+//						System.out.println("inside  " + usersList);
+//					}
+//				}
+			}
+		} catch (XWikiException e) {
+			e.printStackTrace();
+		}
+	}
 }

@@ -31,6 +31,7 @@ import java.util.TreeMap;
 
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.LocalDocumentReference;
+import org.xwiki.model.reference.SpaceReference;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -57,14 +58,16 @@ public class Homework
 	        new LocalDocumentReference(Arrays.asList("Homework","Code"),"MarkClass");
 	public static final LocalDocumentReference HOMEWORK =
 	        new LocalDocumentReference(Arrays.asList("Homework","Code"),"HomeworkClass");
-	
-	
+	public static final LocalDocumentReference UPLOAD =
+	        new LocalDocumentReference(Arrays.asList("Homework","Code"),"UploadClass");
+
+
 	public Homework(XWikiContext xwikiContext, DocumentReference docRef) {		
 		this.docRef=docRef;
 		this.xwikiContext=xwikiContext;
 		this.setGroups();
 	}
-	
+
 	public Map<String, Object[]>  setExcelData() {
 		Student student;
 		XWiki xwiki = xwikiContext.getWiki();
@@ -96,7 +99,7 @@ public class Homework
 		}
 		return data;
 	}
-	
+
 	public void setDeadline() {
 		XWiki xwiki = xwikiContext.getWiki();
 		String deadlineString;
@@ -116,7 +119,7 @@ public class Homework
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void setGroups() {
 		XWiki xwiki = xwikiContext.getWiki();
 		
@@ -128,11 +131,11 @@ public class Homework
 			e.printStackTrace();
 		}
 	}
-	
+
 	public String getGroups() {
 		return this.groups;
 	}
-	
+
 	public Boolean isBeforeDeadline() {
 		setDeadline();
 		Calendar today = Calendar.getInstance();
@@ -143,7 +146,7 @@ public class Homework
 			return true;
 		return false;
 	}
-	
+
 	public String getName() {
 		String name = docRef.getParent().getName();
 		return name;
@@ -167,7 +170,7 @@ public class Homework
 	                studentsMarks.add("XWiki." + object.getStringValue("student"));
 	            }
 			}
-			
+
 			markObj = homeworkDoc.getXObject(MARK, false, xwikiContext);
 			if(markObj == null) {
 				markObj = homeworkDoc.getXObject(MARK, true, xwikiContext);
@@ -195,5 +198,58 @@ public class Homework
 		} catch (XWikiException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public DocumentReference getNextUploadDoc(List<DocumentReference> childReferences) {
+		int randomNum =  (int)(Math.random() * 10000);
+		String name = "Homework" + randomNum;
+		DocumentReference newUploadDocRef = new DocumentReference(name, docRef.getLastSpaceReference());
+
+		if(childReferences.contains(newUploadDocRef)) {
+			getNextUploadDoc(childReferences);
+		}
+		return newUploadDocRef;
+	}
+
+	public String getNextUploadDocName() {
+		int randomNum =  (int)(Math.random() * 10000);
+		return "Homework" + randomNum;
+	}
+
+	public DocumentReference getUploadDocName(String student) {
+		XWiki xwiki = xwikiContext.getWiki();
+		UploadDoc uploadDoc;
+		List<String> authors;
+
+		try {
+			homeworkDoc = xwiki.getDocument(docRef, xwikiContext);
+			
+			DocumentReference parentRef = new DocumentReference(
+					docRef.getLastSpaceReference().getName(),
+					new SpaceReference(docRef.getLastSpaceReference().getParent()));
+
+			XWikiDocument parentDoc = xwiki.getDocument(parentRef, xwikiContext);
+
+			List<DocumentReference> childReferences = parentDoc.getChildrenReferences(xwikiContext);
+
+			for(int i=0; i<childReferences.size(); i++) {
+				uploadDoc = new UploadDoc(xwikiContext, childReferences.get(i));
+				if(uploadDoc.hasObject(UPLOAD)) {
+					authors = uploadDoc.getAuthors();
+
+					if(authors.contains(student)) {
+						return childReferences.get(i);
+					}
+				}
+             }
+
+			DocumentReference newUploadDoc = getNextUploadDoc(childReferences);
+			return newUploadDoc;
+		} catch (XWikiException e) {
+			e.printStackTrace();
+		}
+
+		DocumentReference newUploadDoc = new DocumentReference(getNextUploadDocName(), docRef.getLastSpaceReference());
+		return newUploadDoc;
 	}
 }

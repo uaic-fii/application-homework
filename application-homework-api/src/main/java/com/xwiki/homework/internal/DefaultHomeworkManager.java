@@ -40,6 +40,7 @@ import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.SpaceReference;
 
 import com.xpn.xwiki.doc.XWikiAttachment;
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -230,12 +231,48 @@ public class DefaultHomeworkManager implements HomeworkManager
         }
     }
 
-
 	public void addMarkObjects(DocumentReference homeworkReference, List<String> members) {
 		xwikiContext = xcontext.get();
         xwiki = xwikiContext.getWiki();
         Homework home = new Homework(xwikiContext, homeworkReference);
 
         home.addMarks(members);
+	}
+
+	public DocumentReference getUploadDocName(DocumentReference homeworkReference, String student) {
+		xwikiContext = xcontext.get();
+        xwiki = xwikiContext.getWiki();
+
+        Homework home = new Homework(xwikiContext, homeworkReference);
+
+        return home.getUploadDocName(student);
+	}
+
+	public void createDocument(DocumentReference docReference, DocumentReference userReference) {
+		xwikiContext = xcontext.get();
+        xwiki = xwikiContext.getWiki();
+
+        DocumentReference parentRef = new DocumentReference(
+                docReference.getLastSpaceReference().getName(),
+				new SpaceReference(docReference.getLastSpaceReference().getParent()));
+
+        try {			
+			if(!xwiki.exists(docReference, xwikiContext)) {
+				XWikiDocument doc = xwiki.getDocument(docReference, xwikiContext);
+				doc.setParentReference(parentRef);
+				doc.setAuthorReference(userReference);
+				xwiki.saveDocument(doc, xwikiContext);
+			}
+		} catch (XWikiException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void updateRights(DocumentReference docReference) {
+		xwikiContext = xcontext.get();
+        xwiki = xwikiContext.getWiki();
+
+        UploadDoc uploadDoc = new UploadDoc(xwikiContext, docReference);
+        uploadDoc.updateRights();
 	}
 }

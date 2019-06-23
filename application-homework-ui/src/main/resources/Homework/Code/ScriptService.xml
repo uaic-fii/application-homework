@@ -42,6 +42,8 @@
   <content>{{groovy}}
   if (request.page) {
     def uploadDoc = xwiki.getDocument(request.space + '.' + request.page);
+    def userDoc = xwiki.getDocument(request.userRef);
+    services.homework.createDocument(uploadDoc.getDocumentReference(), userDoc.getDocumentReference());
     def hwDoc = xwiki.getDocument(request.space+'.WebHome');
     def hwObj = hwDoc.getObject('Homework.Code.HomeworkClass');
     hwDoc.use(hwObj);
@@ -54,7 +56,7 @@
     }
     // Gives rights to the student and the homework teacher.
     // The request should come only from the student that has the page.
-    if (rightsObj == null &amp;&amp; user == request.page) {
+    if (rightsObj == null) {
       rightsObj = uploadDoc.newObject('XWiki.XWikiRights');
       uploadDoc.use('XWiki.XWikiRights');
       uploadDoc.set("groups", "");
@@ -66,7 +68,7 @@
     }
     // Create upload object.
     def uploadObj = uploadDoc.getObject('Homework.Code.UploadClass');
-    if (uploadObj == null &amp;&amp; user == request.page) {
+    if (uploadObj == null &amp;&amp; user == uploadDoc.getAuthorReference().getName()) {
       uploadObj = uploadDoc.newObject('Homework.Code.UploadClass');
       uploadDoc.use('Homework.Code.UploadClass');
       uploadDoc.set("parent", hwDoc.toString());

@@ -87,4 +87,39 @@ public class HomeworkScriptService implements ScriptService
     {
        homeworkManager.addMarkObjects(homeworkReference, members);
     }
+
+    /**
+     * Get uploadDoc name.
+     *
+     * @param homeworkDoc the homework document
+     * @param student the current user
+     * @return avoid
+     */
+    public DocumentReference getUploadDocName(DocumentReference homeworkReference, String student)
+    {
+       return homeworkManager.getUploadDocName(homeworkReference, student);
+    }
+
+    /**
+     * Creates a document.
+     *
+     * @param homeworkDoc the homework document
+     * @param student the current user
+     * @return avoid
+     */
+    public void createDocument(DocumentReference docReference, DocumentReference userReference)
+    {
+       homeworkManager.createDocument(docReference, userReference);
+    }
+
+    /**
+     * Updates rights object of an uploadDoc if the authors have been changes.
+     *
+     * @param docReference the uploadDoc reference
+     * @return avoid
+     */
+    public void updateRights(DocumentReference docReference)
+    {
+       homeworkManager.updateRights(docReference);
+    }
 }

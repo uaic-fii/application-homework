@@ -169,15 +169,7 @@
 #macro(getUploadDoc)
 #getCourseName()
 #set ($hwName = $doc.fullName.split('\.')[2])
-#set ($uploadDocName = $xcontext.user.split('\.')[1])
-#set ($uploadDocRef = $services.model.createDocumentReference('', ['Homework', $courseName, $hwName], $uploadDocName))
-#if (!$xwiki.exists($uploadDocRef))
-  #set ($uploadDoc = $xwiki.getXWiki().getDocument($uploadDocRef, $xcontext.context))
-  #set ($parentRef = $services.model.createDocumentReference('', ['Homework', $courseName], $hwName))
-  #set ($discard = $uploadDoc.setParent($parentRef))
-  #set ($discard = $uploadDoc.setAuthorReference($services.model.createDocumentReference('','XWiki','Admin')))
-  #set ($discard = $xwiki.getXWiki().saveDocument($uploadDoc, 'Created upload page', true, $xcontext.context))
-#end
+#set ($uploadDocRef = $services.homework.getUploadDocName($doc.getDocumentReference(), $xcontext.user))
 #set ($uploadDoc = $xwiki.getDocument($uploadDocRef))
 #set($hasUploadObj = false)
 #if($uploadDoc.getObject('Homework.Code.UploadClass'))
@@ -186,7 +178,7 @@
 #end
 #macro(displayUploadFile)
 #getUploadDoc()
-&lt;form method='post' action="$uploadDoc.getURL('upload')" enctype='multipart/form-data' &gt;
+&lt;form method='post' id='uploadForm' data-name="$uploadDoc.getName()" action="$uploadDoc.getURL('upload')" enctype='multipart/form-data' &gt;
   &lt;input type='hidden' value="$!{services.csrf.getToken()}" name='form_token'/&gt;
   &lt;input type='hidden' value="$doc.getURL('view')" name='xredirect' /&gt;
   &lt;input type='file' name='filepath' id='file' /&gt;
@@ -194,6 +186,7 @@
 &lt;/form&gt;
 #end
 #macro(displaySetAuthors)
+$services.homework.updateRights($uploadDoc.getDocumentReference())
 $uploadDoc.use('Homework.Code.UploadClass')
 &lt;form method='post' action="$xwiki.getURL($uploadDoc, 'saveandcontinue')" class="xform half"&gt;
   &lt;input type='hidden' value="$!{services.csrf.getToken()}" name='form_token'/&gt;
@@ -224,7 +217,7 @@ $uploadDoc.use('Homework.Code.UploadClass')
           &lt;/button&gt;
           &lt;h4 class='modal-title'&gt;Change the mark&lt;/h4&gt;
         &lt;/div&gt;
-        &lt;form id='propEditor' method='post' action="$xwiki.getURL($doc, 'saveandcontinue')" class="xform half"&gt;
+        &lt;form id='propEditor' method='post' action="$xwiki.getURL($doc, 'saveandcontinue')" class="xform"&gt;
           &lt;input type='hidden' value="$!{services.csrf.getToken()}" name='form_token'/&gt;
           &lt;div type='hidden' id='objNumber'&gt;&lt;/div&gt;
           &lt;div class='modal-body'&gt;

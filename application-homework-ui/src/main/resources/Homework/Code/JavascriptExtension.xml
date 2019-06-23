@@ -374,16 +374,15 @@
   let thisDocRef = xm.documentReference;
   let thisDoc = new XWiki.Document(thisDocRef);
   let parentSpaces = thisDoc.space.split('.');
+  let uploadDocName = $('#uploadForm').attr('data-name');
   let userReference = xm.userReference;
-  let userDoc = new XWiki.Document(userReference);
-  let userHwDocRef = new XWiki.DocumentReference('', ['Homework', parentSpaces[1], parentSpaces[2]], userDoc.page);
+  let userHwDocRef = new XWiki.DocumentReference('', ['Homework', parentSpaces[1], parentSpaces[2]], uploadDocName);
   let userHwDoc = new XWiki.Document(userHwDocRef);
   let serviceReference = new XWiki.DocumentReference('wiki', ['Homework', 'Code'], 'ScriptService');
   let serviceDoc = new XWiki.Document(serviceReference);
-
   // Add rights object on click event.
   $('#file').on('click', function() {
-    let serviceUrl = serviceDoc.getURL('get', 'xpage=plain&amp;outputSyntax=plain&amp;page='+userHwDoc.page+'&amp;space=' + userHwDoc.space);
+    let serviceUrl = serviceDoc.getURL('get', 'xpage=plain&amp;outputSyntax=plain&amp;page='+userHwDoc.page+'&amp;space=' + userHwDoc.space+'&amp;ref='+userHwDocRef + '&amp;userRef=' + userReference);
     $.ajax({
       url : serviceUrl,
       error : function(e) {
