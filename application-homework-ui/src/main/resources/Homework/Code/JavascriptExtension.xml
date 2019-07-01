@@ -536,7 +536,7 @@
       </use>
     </class>
     <property>
-      <cache>long</cache>
+      <cache>forbid</cache>
     </property>
     <property>
       <code>require(['jquery', 'xwiki-meta'], function($, xm) {
@@ -545,7 +545,8 @@
     let marks = $('.mark');
     for (let i = 0; i &lt; marks.length; i++) {
       marks[i].on('click', function() {
-        $('#objNumber').attr('value', $(this).parent('tr').attr('data-index'));
+        let number = $(this).find('.count').html();
+        $('#objNumber').attr('value', number);
       });
     }
   });
@@ -560,7 +561,10 @@ require(['jquery', 'xwiki-meta'], function($, xm) {
   let thisDocRef = xm.documentReference;
   let thisDoc = new XWiki.Document(thisDocRef);
   let parentSpaces = thisDoc.space.split('.');
-  let objNumber = $('#objNumber').attr('value') - 1;
+
+  let objNumber = $('#objNumber').attr('value');
+
+
   let serviceUrl = serviceDoc.getURL('view', 'xpage=plain&amp;course=' + parentSpaces[1] + '&amp;homework=' +
                                      parentSpaces[2] + '&amp;number=' + objNumber);
 
@@ -587,127 +591,6 @@ require(['jquery', 'xwiki-meta'], function($, xm) {
     </property>
     <property>
       <parse/>
-    </property>
-    <property>
-      <use>onDemand</use>
-    </property>
-  </object>
-  <object>
-    <name>Homework.Code.JavascriptExtension</name>
-    <number>0</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>4b920985-2ac4-4246-8e33-32b932a4b232</guid>
-    <class>
-      <name>XWiki.StyleSheetExtension</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <cache>
-        <cache>0</cache>
-        <defaultValue>long</defaultValue>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>cache</name>
-        <number>5</number>
-        <prettyName>Caching policy</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>long|short|default|forbid</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </cache>
-      <code>
-        <contenttype>PureText</contenttype>
-        <disabled>0</disabled>
-        <editor>PureText</editor>
-        <name>code</name>
-        <number>2</number>
-        <prettyName>Code</prettyName>
-        <rows>20</rows>
-        <size>50</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </code>
-      <contentType>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>contentType</name>
-        <number>6</number>
-        <prettyName>Content Type</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>CSS|LESS</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </contentType>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>1</number>
-        <prettyName>Name</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-      <parse>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType>yesno</displayType>
-        <name>parse</name>
-        <number>4</number>
-        <prettyName>Parse content</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </parse>
-      <use>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>use</name>
-        <number>3</number>
-        <prettyName>Use this extension</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>currentPage|onDemand|always</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </use>
-    </class>
-    <property>
-      <cache>long</cache>
-    </property>
-    <property>
-      <code>.exporter-excel {
-  background-image: url($xwiki.getSkinFile('icons/silk/page_white_excel.png'));
-  width: 16px;
-  height: 16px;
-  display: inline-block;
-  vertical-align: text-bottom;
-  margin-left: 0.3em;
-}</code>
-    </property>
-    <property>
-      <contentType>CSS</contentType>
-    </property>
-    <property>
-      <name>excel</name>
-    </property>
-    <property>
-      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>

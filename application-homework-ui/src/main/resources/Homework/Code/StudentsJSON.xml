@@ -103,6 +103,7 @@
       #end
     #end
     #set($discard = $map.put('rows', $rows))
+    #set($discard = $map.put('totalrows', $count))
   #end
   #macro(gridresult_buildRowJSON $item $rows $count)
     ## Handle both the case where the "language" filter is used and thus languages are returned too and the case where
@@ -193,7 +194,8 @@
     #elseif($colname == 'mark')
       #set($discard = $itemDoc.use($className, $count))
       #set ($mark = $itemDoc.getValue('mark'))
-      #set ($discard = $row.put('mark', $mark))
+      #set ($displayedMark = $mark + "&lt;div class='hidden count'&gt;$count&lt;/div&gt;")
+      #set ($discard = $row.put('mark', $displayedMark))
     #elseif($colname == 'student')
       #set($discard = $itemDoc.use($className, $count))
       #set ($student = $itemDoc.getValue('student'))
@@ -205,9 +207,11 @@
     #elseif($colname == 'group')
       #set($discard = $itemDoc.use($className, $count))
       #set ($group = $itemDoc.getValue('group'))
+      #set ($student = $itemDoc.getValue('student'))
       #set ($discard = $row.put('group', $group))
     #elseif($colname == 'download')
-      #set ($discard = $row.put('download', '&lt;p&gt;download&lt;/p&gt;'))
+      #set($content = "&lt;button class='btn btn-primary'&gt;$services.icon.render('download', 'Font Awesome') Download&lt;/button&gt;")
+      #set ($discard = $row.put('download', $content.replaceAll('\{\{html clean="false"\}\}', '').replaceAll('\{\{/html\}\}','')))
     #else
       #set ($discard = $row.put('number', $count))
     #end

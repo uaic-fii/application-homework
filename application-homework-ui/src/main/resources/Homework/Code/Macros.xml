@@ -204,10 +204,12 @@ $uploadDoc.use('Homework.Code.UploadClass')
   &lt;label&gt;
     $services.localization.render('homework.attachProfessor.label')
   &lt;/label&gt;
-  &lt;label class="btn btn-light btn-file"&gt;
-      Choose a file &lt;input type='file' name='filepath' id='profFile' style="display: none;"/&gt;
-  &lt;/label&gt;
-  &lt;input class="btn btn-primary" type="submit" value="Upload" name="upload" id="upload"&gt;
+  &lt;span class='uploadProf'&gt;
+    &lt;label class="btn btn-light btn-file"&gt;
+        $services.icon.render('page', 'Font Awesome') Choose a file &lt;input type='file' name='filepath' id='profFile' style="display: none;"/&gt;
+    &lt;/label&gt;
+    &lt;input class="btn btn-default" type="submit" value="Upload" name="upload" id="upload"&gt;
+  &lt;/span&gt;
 &lt;/form&gt;
 #end
 #macro(editorPopup)

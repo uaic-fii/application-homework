@@ -40,15 +40,17 @@
   <syntaxId>plain/1.0</syntaxId>
   <hidden>true</hidden>
   <content>homework.course.label=Course
-homework.description.label=Description
-homework.deadline.label=Deadline
-homework.groups.label=Groups
+homework.description.label=Description of the problem
+homework.deadline.label=Deadline (there cannot be uploaded files after)
+homework.groups.label=Assigned groups
 homework.professors.label=Professors
+homework.multipleAuthors.label=Multiple authors for the same file
+homework.format.label=Accepted formats for upload
 
 homework.attachStudent.label=Upload the homework:
-homework.attachProfessor.label=Upload homework document:
+homework.attachProfessor.label=Upload homework info document:
 homework.download.zip.label=Get the zip file of all homeworks:
-homework.download.excel.label=Export marks:
+homework.download.excel.label=Export students marks:
 homework.upload.author.label=Select the authors of the homework:
 homework.upload.label=Select the homework file:
 homework.upload.rights.error=Error at giving you the rights for upload. Please contact your teacher.</content>
