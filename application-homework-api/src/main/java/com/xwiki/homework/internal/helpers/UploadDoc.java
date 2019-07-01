@@ -151,7 +151,7 @@ public class UploadDoc
 						rightsObject.set("users", users + "," + author, xwikiContext);
 					}
 				}
-
+				xwiki.saveDocument(uploadDoc, xwikiContext);
 //				TODO: when a user is deleted from author remove his rights?
 //				for(String user : usersList) {
 //					if(!authors.contains(user)) {

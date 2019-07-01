@@ -58,6 +58,11 @@
       <version>${platform.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.xwiki.contrib.membership</groupId>
+      <artifactId>application-membership-api</artifactId>
+      <version>1.0.7</version>
+    </dependency>
+    <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-extension-handler-xar</artifactId>
       <version>${platform.version}</version>

@@ -40,7 +40,7 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{groovy}}
-  if (request.page) {
+  if (request.object) {
     def uploadDoc = xwiki.getDocument(request.space + '.' + request.page);
     def userDoc = xwiki.getDocument(request.userRef);
     services.homework.createDocument(uploadDoc.getDocumentReference(), userDoc.getDocumentReference());
@@ -68,7 +68,7 @@
     }
     // Create upload object.
     def uploadObj = uploadDoc.getObject('Homework.Code.UploadClass');
-    if (uploadObj == null &amp;&amp; user == uploadDoc.getAuthorReference().getName()) {
+    if (uploadObj == null) {
       uploadObj = uploadDoc.newObject('Homework.Code.UploadClass');
       uploadDoc.use('Homework.Code.UploadClass');
       uploadDoc.set("parent", hwDoc.toString());
@@ -85,13 +85,25 @@
     }
   }
 {{/groovy}}
+
 {{velocity}}
 #if ($request.number)
+  #set($Integer = 0)
   #set ($docRef = $services.model.createDocumentReference('', ['Homework', $request.course, $request.homework], 'WebHome'))
   #set ($doc = $xwiki.getDocument($docRef))
-  #set ($discard = $doc.use('Homework.Code.MarkClass'))
-  #set ($obj = $doc.getObject('Homework.Code.MarkClass', $request.number))
-  $doc.display('mark','edit',$obj)
+  #set ($discard = $doc.use('Homework.Code.MarkClass', $Integer.parseInt($request.number)))
+  #set ($obj = $doc.getObject('Homework.Code.MarkClass', $Integer.parseInt($request.number)))
+  $doc.display('mark','edit',$obj)##
+#end
+#if ($request.upload)
+  #set ($doc = $xwiki.getDocument($request.ref))
+  #set ($obj = $doc.getObject('Homework.Code.HomeworkClass'))
+  #set ($format = $obj.getValue('format'))
+  #foreach ($value in $format)
+    $value
+  #end
+  #set ($deadline = $obj.getValue('deadline'))
+  ,$services.homework.canUploadHomework($request.ref)
 #end
 {{/velocity}}</content>
 </xwikidoc>

@@ -187,6 +187,9 @@
 #end
 #macro(displaySetAuthors)
 $services.homework.updateRights($uploadDoc.getDocumentReference())
+#getUploadDoc()
+##set ($uploadDocRef = $services.model.createDocumentReference('', ['Homework', 'AlgebraicFoundationsCS', 'Matrici rare'], 'Homework8941'))
+##set ($uploadDoc = $xwiki.getDocument($uploadDocRef))
 $uploadDoc.use('Homework.Code.UploadClass')
 &lt;form method='post' action="$xwiki.getURL($uploadDoc, 'saveandcontinue')" class="xform half"&gt;
   &lt;input type='hidden' value="$!{services.csrf.getToken()}" name='form_token'/&gt;

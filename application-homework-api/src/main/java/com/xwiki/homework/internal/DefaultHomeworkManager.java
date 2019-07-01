@@ -257,12 +257,12 @@ public class DefaultHomeworkManager implements HomeworkManager
 				new SpaceReference(docReference.getLastSpaceReference().getParent()));
 
         try {			
-			if(!xwiki.exists(docReference, xwikiContext)) {
+			//if(!xwiki.exists(docReference, xwikiContext)) {
 				XWikiDocument doc = xwiki.getDocument(docReference, xwikiContext);
 				doc.setParentReference(parentRef);
 				doc.setAuthorReference(userReference);
 				xwiki.saveDocument(doc, xwikiContext);
-			}
+			//}
 		} catch (XWikiException e) {
 			e.printStackTrace();
 		}

@@ -114,6 +114,30 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </description>
+      <format>
+        <cache>0</cache>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayType>checkbox</displayType>
+        <freeText/>
+        <hint/>
+        <multiSelect>1</multiSelect>
+        <name>format</name>
+        <number>6</number>
+        <picker>0</picker>
+        <prettyName>format</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <sort/>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values>value1=JSON|value2=Zip|value3=PDF|value4=Tar</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </format>
       <groups>
         <cache>0</cache>
         <customDisplay/>
@@ -138,6 +162,21 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.GroupsClass</classType>
       </groups>
+      <multipleAuthors>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType/>
+        <hint/>
+        <name>multipleAuthors</name>
+        <number>7</number>
+        <prettyName>multipleAuthors</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </multipleAuthors>
       <professors>
         <cache>0</cache>
         <customDisplay/>
@@ -173,7 +212,13 @@
       <description/>
     </property>
     <property>
+      <format/>
+    </property>
+    <property>
       <groups/>
+    </property>
+    <property>
+      <multipleAuthors/>
     </property>
     <property>
       <professors/>

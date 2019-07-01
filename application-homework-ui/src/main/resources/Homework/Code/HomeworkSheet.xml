@@ -95,11 +95,29 @@
   &lt;/div&gt;
 
   ## Professors
-  &lt;div class='col-xs-12 col-md-6'&gt;
+  &lt;div class='col-xs-12 col-md-6 '&gt;
     ; &lt;label #if ($xcontext.action == 'edit')for='Homework.Code.HomeworkClass_0_professors'#end&gt;
       $services.localization.render('homework.professors.label')
     &lt;/label&gt;
     : $doc.display('professors')
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class='row'&gt;
+  ## Format
+  &lt;div class='col-xs-12 col-md-6'&gt;
+    ; &lt;label #if ($xcontext.action == 'edit')for='Homework.Code.HomeworkClass_0_format'#end&gt;
+      $services.localization.render('homework.format.label')
+    &lt;/label&gt;
+    : $doc.display('format')
+  &lt;/div&gt;
+
+  ## Authors
+  &lt;div class='col-xs-12 col-md-6'&gt;
+    ; &lt;label #if ($xcontext.action == 'edit')for='Homework.Code.HomeworkClass_0_multipleAuthors'#end&gt;
+      $services.localization.render('homework.multipleAuthors.label')
+    &lt;/label&gt;
+    : $doc.display('multipleAuthors')
   &lt;/div&gt;
 &lt;/div&gt;
 
@@ -142,20 +160,22 @@
 #end
 
 {{/html}}
+
 {{/velocity}}
 
 {{velocity}}
-#if($xcontext.action == 'view')
-  #if ($isProfessor)
-    #changeLocation()
-    #makePageNested()
+#if($xcontext.action == 'view' &amp;&amp; $isProfessor)
+  #changeLocation()
+  #makePageNested()
+  #if($doc.getParent() != 'Homework.WebHome')
     #addMarks()
   #end
 
   #set ($columnsProperties = {
     'student': {'type': 'text', 'size': 10},
     'group': {'type': 'text', 'html': 'true'},
-    'mark': {'type': 'text', 'html': 'true', 'link':'editor'}
+    'mark': {'type': 'text', 'html': 'true', 'link':'editor'},
+    'download': {'type': 'text', 'html': 'true'}
   })
 
   ## URL for options

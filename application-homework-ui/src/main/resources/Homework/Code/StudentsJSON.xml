@@ -81,6 +81,7 @@
       #set ($query = $query.addFilter($queryFilter))
     #end
     #set ($query = $query.setLimit($limit).setOffset($offset).bindValues($sqlParams))
+    #set ($query = $services.query.xwql("from doc.object(Homework.Code.MarkClass) as mark order by doc.fullName asc"))
     #set($items = $query.execute())
     #set($discard = $map.put('totalrows', $query.count()))
     #set($discard = $map.put('returnedrows', $mathtool.min($items.size(), $limit)))
@@ -196,13 +197,17 @@
     #elseif($colname == 'student')
       #set($discard = $itemDoc.use($className, $count))
       #set ($student = $itemDoc.getValue('student'))
-      #set ($discard = $row.put('student', $student))
+      #set ($docRef = $services.model.createDocumentReference('', 'XWiki', $student))
+      #set ($sDoc = $xwiki.getDocument($docRef))
+      #set ($sObj = $sDoc.getObject('XWiki.XWikiUsers', 0))
+      #set ($name = $sObj.getValue('first_name') + ' ' + $sObj.getValue('last_name'))
+      #set ($discard = $row.put('student', $name))
     #elseif($colname == 'group')
       #set($discard = $itemDoc.use($className, $count))
       #set ($group = $itemDoc.getValue('group'))
       #set ($discard = $row.put('group', $group))
     #elseif($colname == 'download')
-      #set ($discard = $row.put('download'))
+      #set ($discard = $row.put('download', '&lt;p&gt;download&lt;/p&gt;'))
     #else
       #set ($discard = $row.put('number', $count))
     #end

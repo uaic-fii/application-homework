@@ -65,7 +65,6 @@ public class Homework
 	public Homework(XWikiContext xwikiContext, DocumentReference docRef) {		
 		this.docRef=docRef;
 		this.xwikiContext=xwikiContext;
-		this.setGroups();
 	}
 
 	public Map<String, Object[]>  setExcelData() {
@@ -133,6 +132,7 @@ public class Homework
 	}
 
 	public String getGroups() {
+		this.setGroups();
 		return this.groups;
 	}
 
@@ -236,7 +236,6 @@ public class Homework
 				uploadDoc = new UploadDoc(xwikiContext, childReferences.get(i));
 				if(uploadDoc.hasObject(UPLOAD)) {
 					authors = uploadDoc.getAuthors();
-
 					if(authors.contains(student)) {
 						return childReferences.get(i);
 					}
@@ -251,5 +250,20 @@ public class Homework
 
 		DocumentReference newUploadDoc = new DocumentReference(getNextUploadDocName(), docRef.getLastSpaceReference());
 		return newUploadDoc;
+	}
+
+	public Boolean hasObject(LocalDocumentReference OBJECT) {
+		XWiki xwiki = xwikiContext.getWiki();
+
+		try {
+			homeworkDoc = xwiki.getDocument(docRef, xwikiContext);
+			homeworkObj = homeworkDoc.getXObject(OBJECT, 0);
+			if(homeworkObj != null) {
+				return true;
+			}
+		} catch (XWikiException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 }
