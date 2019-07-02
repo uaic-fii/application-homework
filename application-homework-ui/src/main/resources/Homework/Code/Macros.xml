@@ -193,21 +193,26 @@
 &lt;form method='post' id='uploadForm' data-name="$uploadDoc.getName()" action="$uploadDoc.getURL('upload')" enctype='multipart/form-data' &gt;
   &lt;input type='hidden' value="$!{services.csrf.getToken()}" name='form_token'/&gt;
   &lt;input type='hidden' value="$doc.getURL('view')" name='xredirect' /&gt;
-  &lt;input type='file' name='filepath' id='file' /&gt;
+  &lt;label for='file' class='uploadStud btn btn-default'&gt;
+    $services.icon.render('page', 'Font Awesome') Choose a file &lt;input type='file' name='filepath' id='file' style="display: none;"/&gt;
+  &lt;/label&gt;
   &lt;div id='responseContainer' class='hidden'&gt;&lt;/div&gt;
 &lt;/form&gt;
+
 #end
 #macro(displaySetAuthors)
 $services.homework.updateRights($uploadDoc.getDocumentReference())
 #getUploadDoc()
 $uploadDoc.use('Homework.Code.UploadClass')
-&lt;form method='post' action="$xwiki.getURL($uploadDoc, 'saveandcontinue')" class="xform half"&gt;
+&lt;form method='post' action="$xwiki.getURL($uploadDoc, 'saveandcontinue')"&gt;
   &lt;input type='hidden' value="$!{services.csrf.getToken()}" name='form_token'/&gt;
   $uploadDoc.display('authors','edit')
-  &lt;input class='button' type='submit' name='formactionsac' value="$services.localization.render('admin.save')" /&gt;
+  &lt;label for='file' class='uploadStud btn btn-default'&gt;
+    $services.icon.render('space', 'Font Awesome') $services.localization.render('admin.save') &lt;input class='button' type='submit' name='formactionsac' style="display: none;"/&gt;
+  &lt;/label&gt;
 &lt;/form&gt;
 #end
-## TODO $doc with 'WebHome'
+## TODO $doc with 'WebHome'?
 #macro(displayUploadFileProf)
 &lt;form method='post' action="$doc.getURL('upload')" enctype='multipart/form-data' &gt;
   &lt;input type='hidden' value="$!{services.csrf.getToken()}" name='form_token'/&gt;
@@ -215,11 +220,11 @@ $uploadDoc.use('Homework.Code.UploadClass')
   &lt;label&gt;
     $services.localization.render('homework.attachProfessor.label')
   &lt;/label&gt;
-  &lt;span class='uploadProf'&gt;
-    &lt;label class="btn btn-light btn-file"&gt;
+  &lt;span class='uploadProf btn btn-primary'&gt;
+    &lt;label class="btn-file"&gt;
         $services.icon.render('page', 'Font Awesome') Choose a file &lt;input type='file' name='filepath' id='profFile' style="display: none;"/&gt;
     &lt;/label&gt;
-    &lt;input class="btn btn-default" type="submit" value="Upload" name="upload" id="upload"&gt;
+    &lt;input class="btn-default btn-upload" type="submit" value="Upload" name="upload" id="upload"&gt;
   &lt;/span&gt;
 &lt;/form&gt;
 #end

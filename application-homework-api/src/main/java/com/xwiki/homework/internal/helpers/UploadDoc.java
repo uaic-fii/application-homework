@@ -105,7 +105,10 @@ public class UploadDoc
 			for(String author : this.authors) {
 				String authorName = author.split("\\.")[1];
 				student = new Student(xwikiContext, new DocumentReference(xwikiContext.getWikiId(), "XWiki", authorName));
-				this.attachmentName = attachmentName + student.getAttachmentName() + '-';
+				this.attachmentName = attachmentName + student.getAttachmentName();
+				if(this.authors.get(this.authors.size()-1) != author) {
+					this.attachmentName += '-';
+				}
 			}
 
 		} catch (XWikiException e) {

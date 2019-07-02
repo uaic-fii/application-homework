@@ -51,9 +51,11 @@ homework.attachStudent.label=Upload the homework:
 homework.attachProfessor.label=Upload homework info document:
 homework.download.zip.label=Get the zip file of all homeworks:
 homework.download.excel.label=Export students marks:
-homework.upload.author.label=Select the authors of the homework:
-homework.upload.label=Select the homework file:
-homework.upload.rights.error=Error at giving you the rights for upload. Please contact your teacher.</content>
+homework.upload.author.label=SELECT AUTHORS
+homework.upload.label=UPLOAD THE SOLUTION
+homework.upload.rights.error=Error at giving you the rights for upload. Please contact your teacher.
+homework.upload.attachments=Uploaded attachments on page (only the last uploaded will be taken into consideration)
+homework.upload.mark=Your mark</content>
   <object>
     <name>Homework.Code.Translations</name>
     <number>0</number>

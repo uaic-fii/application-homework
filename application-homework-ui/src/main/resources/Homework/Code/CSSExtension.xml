@@ -152,6 +152,10 @@
 
 .uploadProf {
   transition: box-shadow .3s;
+}
+
+.uploadProf2 {
+  transition: box-shadow .3s;
   border-radius:3px;
   border: 1px solid #3E7CBC;
   border-bottom-color: #316396;
@@ -160,9 +164,39 @@
   padding: 10px 6px;
 }
 
+.btn-upload {
+  font-weight: bold;
+  border-radius:3px;
+  color: #000000;
+}
+
 .uploadProf:hover {
   padding: 10px 6px;
   box-shadow: 0 0 11px rgba(33,33,33,.2);
+}
+
+.uploadStud {
+  width: 100%;
+  padding: 10px 15px;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.btn-default {
+    background-image: linear-gradient(#ffffff,#eeeeee 50%,#e0e0e0)
+}
+
+.fa-file {
+  font-size: large;
+  margin-right: 5px;
+}
+
+.markStud {
+  font-size: large;
+}
+
+.deepshadow {
+  text-align: center;
 }</code>
     </property>
     <property>

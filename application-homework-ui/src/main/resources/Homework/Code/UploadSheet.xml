@@ -40,5 +40,38 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
   <content>{{velocity}}
+
+{{html}}
+#set ($docextras = [])
+$xwiki.jsfx.use('uicomponents/widgets/upload.js', {'forceSkinAction': true, 'language': ${xcontext.locale}})
+$xwiki.ssfx.use('uicomponents/widgets/upload.css', true)
+$xwiki.jsfx.use('js/xwiki/viewers/attachments.js', {'forceSkinAction': true, 'language': ${xcontext.locale}})
+$xwiki.ssfx.use('js/xwiki/viewers/attachments.css', true)
+###
+&lt;label&gt; $services.localization.render('homework.upload.attachments') &lt;/label&gt;
+#set($showactions = 0)
+&lt;div id="attachmentscontent" class="xwikiintracontent"&gt;
+&lt;div id="attw"&gt;
+&lt;div id="_attachments" class="attachments"&gt;
+#template("attachmentslist.vm")
+&lt;/div&gt; ## attachments
+&lt;/div&gt; ## attw
+&lt;/div&gt; ## attachmentscontent
+
+&lt;label&gt; $services.localization.render('homework.upload.mark') &lt;/label&gt;
+#set($uploadObj = $doc.getObject('Homework.Code.UploadClass'))
+#set ($parent = $uploadObj.getValue('parent'))
+#set ($parentDoc = $xwiki.getDocument($parent))
+#set ($markObjs = $parentDoc.getObjects('Homework.Code.MarkClass'))
+#foreach ($markObj in $markObjs)
+  #set ($student = $markObj.getValue('student'))
+  #if($xcontext.user.contains($student))
+    #set ($mark = $markObj.getValue('mark'))
+  #end
+#end
+#if ($mark != 0.0)
+  &lt;div class='markStud'&gt;$services.icon.render('fa-table', 'Font Awesome') $mark&lt;/div&gt;
+#end
+{{/html}}
 {{/velocity}}</content>
 </xwikidoc>

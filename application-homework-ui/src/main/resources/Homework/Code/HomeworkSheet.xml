@@ -52,7 +52,7 @@
 &lt;div class="row"&gt;
   ## Description
   &lt;div class='col-xs-12'&gt;
-    ; &lt;label #if ($xcontext.action == 'edit')for='Homework.Code.HomeworkClass_0_description'#end&gt;
+    ; &lt;label class='deepshadow' #if ($xcontext.action == 'edit')for='Homework.Code.HomeworkClass_0_description'#end&gt;
       $services.localization.render('homework.description.label')
     &lt;/label&gt;
     : $doc.display('description')
@@ -128,14 +128,14 @@
   &lt;div class='row'&gt;
     ## Upload form.
     &lt;div class='col-xs-12 col-md-6'&gt;
-      ; &lt;label&gt;
+      ; &lt;label class='deepshadow'&gt;
         $services.localization.render('homework.upload.label')
       &lt;/label&gt;
       : #displayUploadFile()
     &lt;/div&gt;
     ## Edit the authors of a homework.
     &lt;div class='col-xs-12 col-md-6'&gt;
-      #if ($hasUploadObj)
+      #if ($hasUploadObj &amp;&amp; $doc.getValue('multipleAuthors') == 1)
         &lt;label&gt;
           $services.localization.render('homework.upload.author.label')
         &lt;/label&gt;
