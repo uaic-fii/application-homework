@@ -121,8 +121,9 @@ public class DefaultHomeworkManager implements HomeworkManager
 
             List<DocumentReference> childReferences = homework.getChildrenReferences(xwikiContext);
             for(int i=0; i<childReferences.size(); i++) {
-                if(!student.isEmpty()) {
-                    if (childReferences.get(i).getName().compareTo(student)==0) {
+                if(!student.isEmpty()) {                	
+                	uploadDoc = new UploadDoc(xwikiContext, childReferences.get(i));
+                    if (uploadDoc.isAuthor(student)) {
                         zos = getZOS(childReferences.get(i), zos);
                     }
                 } else {

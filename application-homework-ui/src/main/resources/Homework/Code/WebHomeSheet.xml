@@ -42,9 +42,12 @@
   <content>{{include reference="Homework.Code.Macros"/}}
 
 {{velocity}}
+#if($xwiki.exists('Calendar.Macro'))
+ [[Calendar of homeworks&gt;&gt;Homework.Code.Calendar]]
+#end
+
 #set ($columnsProperties = {
   'doc.title': {'type': 'text', 'size': 10, 'link': 'view'},
-  'description': {'type': 'text', 'html': 'true'},
   'deadline': {'type': 'text', 'size': 10},
   'course': {'type': 'text', 'size': 10, 'html': 'true'},
   'groups': {'type': 'text', 'html': 'true'},
@@ -59,7 +62,7 @@
   'defaultOrder': 'desc',
   'resultPage': 'Homework.Code.HomeworkJSON'
 })
-#set ($columns = ['doc.title', 'description', 'deadline', 'course', 'groups', 'professors', '_actions'])
+#set ($columns = ['doc.title', 'deadline', 'course', 'groups', 'professors', '_actions'])
 #livetable('homeworks' $columns $columnsProperties $options)
 {{/velocity}}</content>
 </xwikidoc>

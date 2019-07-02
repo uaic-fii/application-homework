@@ -210,7 +210,7 @@
       #set ($student = $itemDoc.getValue('student'))
       #set ($discard = $row.put('group', $group))
     #elseif($colname == 'download')
-      #set($content = "&lt;button class='btn btn-primary'&gt;$services.icon.render('download', 'Font Awesome') Download&lt;/button&gt;")
+      #set($content = "&lt;button class='btn btn-primary singleDownload' data-student='$student'&gt;$services.icon.render('download', 'Font Awesome') Download&lt;/button&gt;")
       #set ($discard = $row.put('download', $content.replaceAll('\{\{html clean="false"\}\}', '').replaceAll('\{\{/html\}\}','')))
     #else
       #set ($discard = $row.put('number', $count))

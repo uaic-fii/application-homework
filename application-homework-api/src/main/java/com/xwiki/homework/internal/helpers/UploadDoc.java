@@ -153,16 +153,26 @@ public class UploadDoc
 				}
 				xwiki.saveDocument(uploadDoc, xwikiContext);
 //				TODO: when a user is deleted from author remove his rights?
-//				for(String user : usersList) {
-//					if(!authors.contains(user)) {
-//						usersList.remove(user);
-//						rightsObject.set("users", usersList.toString(), xwikiContext);
-//						System.out.println("inside  " + usersList);
-//					}
-//				}
 			}
 		} catch (XWikiException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public Boolean isAuthor(String student) {
+		XWiki xwiki = xwikiContext.getWiki();
+
+		try {
+			uploadDoc = xwiki.getDocument(docRef, xwikiContext);
+			if(this.hasObject(UPLOAD)) {
+				authors = this.getAuthors();
+				if(authors.contains(student)) {
+					return true;
+				}
+			}
+		} catch (XWikiException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 }

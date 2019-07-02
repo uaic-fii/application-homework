@@ -20,40 +20,28 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.3" reference="Homework.Code.DownloadService" locale="">
+<xwikidoc version="1.3" reference="Homework.Code.Calendar" locale="">
   <web>Homework.Code</web>
-  <name>DownloadService</name>
+  <name>Calendar</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1556544170000</creationDate>
+  <creationDate>1562069537000</creationDate>
   <parent>Homework.Code.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1556645642000</date>
-  <contentUpdateDate>1556645642000</contentUpdateDate>
+  <date>1562069736000</date>
+  <contentUpdateDate>1562069736000</contentUpdateDate>
   <version>1.1</version>
-  <title>DownloadService</title>
+  <title>Calendar</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>true</hidden>
+  <hidden>false</hidden>
   <content>
 {{velocity}}
-#if ($xcontext.action == 'get' &amp;&amp; "$!{request.outputSyntax}" == 'plain')
-  #if ($request.download == 'zip')
-    #set($docRef = $services.model.createDocumentReference('', ['Homework', $request.course], $request.homework))
-    $services.homework.downloadAttachments($docRef, '')
-  #elseif ($request.download == 'excel')
-    #set($docRef = $services.model.createDocumentReference('', ['Homework', $request.course, $request.homework], 'WebHome'))
-    $services.homework.export($docRef)
-  #elseif ($request.download == 'single')
-    #set($docRef = $services.model.createDocumentReference('', ['Homework', $request.course], $request.homework))
-    #set ($student = 'XWiki.' + $request.student)
-    $services.homework.downloadAttachments($docRef, $student)
-  #end
-#end
+{{calendar classname="Homework.Code.HomeworkClass" startfield="deadline" defaultView="month" firstHour="8" minTime="8" maxTime="21" language="en" editable="true" timeFormat="HH:mm" /}}
 {{/velocity}}
 </content>
 </xwikidoc>

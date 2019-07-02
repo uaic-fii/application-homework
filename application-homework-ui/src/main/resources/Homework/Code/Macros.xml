@@ -157,6 +157,18 @@
     ## Make the page nested and delete the redirect.
     #set ($discard = $services.refactoring.convertToNestedDocument($doc).join())
     #set ($deleteRequest = $services.refactoring.delete($toDeleteDoc).join())
+
+    {{html}}
+    &lt;script language="javascript"&gt;
+    require(['jquery', 'xwiki-meta'], function($, xm) {
+      let docReference = xm.documentReference;
+      let serviceDoc = new XWiki.Document(docReference);
+      let url = serviceDoc.getURL('view');
+      window.location.href = url;
+    });
+    &lt;/script&gt;
+    {{/html}}
+
   #end
 #end
 #end
@@ -188,8 +200,6 @@
 #macro(displaySetAuthors)
 $services.homework.updateRights($uploadDoc.getDocumentReference())
 #getUploadDoc()
-##set ($uploadDocRef = $services.model.createDocumentReference('', ['Homework', 'AlgebraicFoundationsCS', 'Matrici rare'], 'Homework8941'))
-##set ($uploadDoc = $xwiki.getDocument($uploadDocRef))
 $uploadDoc.use('Homework.Code.UploadClass')
 &lt;form method='post' action="$xwiki.getURL($uploadDoc, 'saveandcontinue')" class="xform half"&gt;
   &lt;input type='hidden' value="$!{services.csrf.getToken()}" name='form_token'/&gt;
@@ -197,6 +207,7 @@ $uploadDoc.use('Homework.Code.UploadClass')
   &lt;input class='button' type='submit' name='formactionsac' value="$services.localization.render('admin.save')" /&gt;
 &lt;/form&gt;
 #end
+## TODO $doc with 'WebHome'
 #macro(displayUploadFileProf)
 &lt;form method='post' action="$doc.getURL('upload')" enctype='multipart/form-data' &gt;
   &lt;input type='hidden' value="$!{services.csrf.getToken()}" name='form_token'/&gt;
@@ -245,8 +256,6 @@ $uploadDoc.use('Homework.Code.UploadClass')
   #set ($members = $services.user.group.getMembers($groupRef))
   $services.homework.addMarkObjects($doc.getDocumentReference(), $members)
 #end
-##$services.homework.addMarkObjects($doc.getDocumentReference())
-##set($allGroupsInAllWikis = $services.user.group.getMembers('xwiki:XWiki.MyGroup'))
 #end
 {{/velocity}}</content>
 </xwikidoc>

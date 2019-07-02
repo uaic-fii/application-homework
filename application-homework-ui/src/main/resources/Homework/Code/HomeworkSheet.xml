@@ -167,7 +167,7 @@
 #if($xcontext.action == 'view' &amp;&amp; $isProfessor)
   #changeLocation()
   #makePageNested()
-  #if($doc.getParent() != 'Homework.WebHome')
+  #if($doc.getParent() != 'Homework.WebHome' &amp;&amp; $doc.getName() == 'WebHome')
     #addMarks()
   #end
 

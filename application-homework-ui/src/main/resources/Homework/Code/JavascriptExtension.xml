@@ -151,10 +151,10 @@
 
   // Download one file.
   $(window).on("load", function(event) {
-    let file = $('.download');
+    let file = $('.singleDownload');
     for (let i = 0; i &lt; file.length; i++) {
       file[i].on('click', function() {
-        let student = $(this).siblings('.student').html();
+        let student = $(this).attr('data-student');
         let serviceUrl = serviceDoc.getURL('get', 'outputSyntax=plain&amp;course=' + parentSpaces[1] +
                                        '&amp;homework=' + parentSpaces[2] + '&amp;download=single' + '&amp;student=' + student);
         window.location.href = serviceUrl;
@@ -360,6 +360,7 @@
     </property>
     <property>
       <code>require(['jquery', 'xwiki-meta'], function($, xm) {
+  if(window.location.href.indexOf('view')!=-1) {
   // Prepare the upload form.
   // Get the script page and the upload document name.
   var map = {
@@ -439,11 +440,19 @@
   // Add upload object after the upload is done.
   $(document).on('xwiki:html5upload:done', function() {
     let fileName = targetInput.files[0].name;
-    let serviceUrl = serviceDoc.getURL('get', 'xpage=plain&amp;outputSyntax=plain&amp;page='+userHwDoc.page+'&amp;space=' + userHwDoc.space+'&amp;filename='+fileName + '&amp;object=1');
+    let serviceUrl = serviceDoc.getURL('get', 'xpage=plain&amp;outputSyntax=plain&amp;page='+userHwDoc.page+'&amp;space=' + userHwDoc.space + '&amp;userRef=' + userReference + '&amp;filename='+fileName + '&amp;object=1');
+    console.log(serviceUrl);
     $.ajax({
-      url : serviceUrl
+      url : serviceUrl,
+      success : function(e) {
+        console.log("success");
+      },
+      error : function(e) {
+        alert("$services.localization.render('homework.upload.rights.error')");
+      }
     });
   });
+  }
 });</code>
     </property>
     <property>
