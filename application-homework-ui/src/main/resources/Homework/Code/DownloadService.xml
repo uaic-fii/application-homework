@@ -27,12 +27,9 @@
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1556544170000</creationDate>
   <parent>Homework.Code.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1556645642000</date>
-  <contentUpdateDate>1556645642000</contentUpdateDate>
   <version>1.1</version>
   <title>DownloadService</title>
   <comment/>
